@@ -8,7 +8,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 if(MSVC)
 	add_compile_options(/W4)
 else()
-	add_compile_options(-Wall -Wextra -Wpedantic)
+	add_compile_options(-Wall -Wextra -Wpedantic -O2)
 endif()
 
 add_subdirectory(src)
