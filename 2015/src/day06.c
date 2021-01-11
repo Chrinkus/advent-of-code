@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-enum buff_sizes { op_max = 4, line_max = 64, arr_dim = 1000 };
-
+// should be lib'd out..
 int readline(char* line_buff, size_t buff_max)
 {
 	if (line_buff == NULL || (buff_max == 0))
@@ -17,6 +16,13 @@ int readline(char* line_buff, size_t buff_max)
 	*line_buff = '\0';
 	return len;
 }
+
+enum buff_sizes {
+	op_max = 4,		// "turn" operation (on/off)
+	line_max = 64,		// enough to read input by lines
+	arr_dim = 1000,		// single dimension of two dimension array
+	arr_max = 1000000	// number of elements in light array
+};
 
 enum ctrl { toggle, turn_on, turn_off };
 enum state { on = '#', off = ' ' };
@@ -94,16 +100,19 @@ int accumulate(const int arr[], int len, int n)
 }
 
 int main()
+	// Two 1000x1000 grids. Char grid treated as 2-dimensional array,
+	// int grid treated as one big array. The int array was easier to
+	// initialize and work with.
 {
 	char lights1[arr_dim][arr_dim];
 	set_all_lights(lights1, off);		// is there a better way?
 
-	int lights2[arr_dim*arr_dim] = { 0 };
+	int lights2[arr_max] = { 0 };
 
 	parse_and_dispatch(lights1, lights2);
 
 	int part1 = count_lights(lights1, on);
-	int part2 = accumulate(lights2, arr_dim * arr_dim, 0);
+	int part2 = accumulate(lights2, arr_max, 0);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
