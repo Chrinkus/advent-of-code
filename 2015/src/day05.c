@@ -3,15 +3,19 @@
 #include <stdbool.h>
 #include <string.h>
 
-int readline(char* lineptr, size_t n, FILE* stream)
+int readline(char* linebuff, size_t max_buff)
 {
-	int count = 0;
-	for (int c; --n && (c = fgetc(stream)) != EOF && c != '\n'; ++count) {
-		*lineptr++ = c;
-	}
-	*lineptr = '\0';
+	if (linebuff == NULL || (max_buff == 0))
+		return 0;
 
-	return count;
+	int len = 0;
+	for (int c; --max_buff && (c = getchar()) != EOF && c != '\n'; ) {
+		*linebuff++ = c;
+		++len;
+	}
+	*linebuff = '\0';
+
+	return len;
 }
 
 bool is_nice_v1(char* s)
@@ -76,12 +80,13 @@ bool is_nice_v2(char* s)
 	return false;
 }
 
+enum { line_max = 20 };
+
 void count_nice_strings(int* count1, int* count2)
 {
-	const size_t buf_max = 20;
-	char line[buf_max];
+	char line[line_max];
 
-	for (int nread; (nread = readline(line, buf_max, stdin)) != 0; ) {
+	for (int nread; (nread = readline(line, line_max)) != 0; ) {
 		if (is_nice_v1(line))
 			++*count1;
 		if (is_nice_v2(line))
