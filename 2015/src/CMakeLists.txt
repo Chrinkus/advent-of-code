@@ -4,3 +4,4 @@ add_executable(day03 day03.c)
 
 add_executable(day05 day05.c)
 add_executable(day06 day06.c)
+add_executable(day07 day07.c)
