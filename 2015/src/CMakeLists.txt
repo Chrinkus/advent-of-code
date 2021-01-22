@@ -5,5 +5,6 @@ add_executable(day04 day04.c)
 add_executable(day05 day05.c)
 add_executable(day06 day06.c)
 add_executable(day07 day07.c)
+add_executable(day08 day08.c)
 
 target_link_libraries(day04 ssl crypto)
