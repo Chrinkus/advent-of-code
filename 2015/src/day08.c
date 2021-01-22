@@ -19,6 +19,37 @@ size_t strtrim(char* s)
 	return len;
 }
 
+struct lengths {
+	size_t code;
+	size_t memory;
+	size_t encoded;
+};
+
+void get_lengths(char* s, struct lengths* l)
+{
+	l->code = strtrim(s);
+	l->memory = l->code - 2;
+	l->encoded = l->code + 4;
+
+	for ( ; *s; ++s) {
+		if (*s == '\\') {
+			++s;
+			switch (*s) {
+			case '"':
+			case '\\':
+				l->memory -= 1;
+				l->encoded += 2;
+				break;
+			case 'x':
+				l->memory -= 3;
+				l->encoded += 1;
+				s += 2;
+				break;
+			}
+		}
+	}
+}
+
 int main()
 {
 	puts("Advent of Code 2015");
@@ -31,26 +62,12 @@ int main()
 	int memory = 0;
 	int encoded = 0;
 	while ((getline(&line, &len, stdin)) > 1) {
-		size_t cl = strtrim(line);
-		size_t ml = cl - 2;		// quotes
-		size_t el = cl + 4;
+		struct lengths ls = { 0 };
+		get_lengths(line, &ls);
 
-		for (char* p = line; *p; ++p)
-			if (*p == '\\') {
-				++p;
-				--ml;
-				++el;		// encode the slash
-				if (*p == 'x') {
-					ml -= 2;
-					p += 2;
-				} else {
-					++el;	// encode the quote
-				}
-			}
-
-		code += cl;
-		memory += ml;
-		encoded += el;
+		code += ls.code;
+		memory += ls.memory;
+		encoded += ls.encoded;
 	}
 	free(line);
 
