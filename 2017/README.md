@@ -9,3 +9,7 @@ Writing these solutions have significantly aided my efforts to learn C++ and hav
 ![Advent of Code 2017 completion stats](../images/FinalStats.png)
 
 I was able to complete the challenges with my limited C++ knowledge. After I complete my introductory text-book I'd like to come back and attempt more effective solutions.
+
+### Update 2021-10-15
+
+These solutions are being kept as-is. This repo has been consolidated with my main advent-of-code repository.
