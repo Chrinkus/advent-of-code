@@ -57,7 +57,8 @@ int main()
 
 				struct Point pt = { x, y };
 				sxc_vector_find(pv, &pt, point_cmp_eq, hq);
-				sxc_vector_push(pv, pt);
+				if (!hq)
+					sxc_vector_push(pv, pt);
 			}
 		} else {	// Part 1 continued..
 			switch (f) {
