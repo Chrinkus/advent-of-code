@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# Fetches the daily input for Advent of Code
+# Can be passed different year and day as arguments
+#	$ program YYYY DD
+
+# Day must not be zero padded!
+
+YEAR="$(date +%Y)"
+DAY="$(date +%-d)"
+
+if [[ $# -eq 2 ]]; then
+	YEAR="$1"
+	DAY="$2"
+fi
+
+echo $YEAR $DAY
+
+URL="https://adventofcode.com/$YEAR/day/$DAY/input"
+
+firefox --new-window $URL

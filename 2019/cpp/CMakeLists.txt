@@ -1,0 +1,64 @@
+cmake_minimum_required(VERSION 3.13)
+
+project(aoc2019 VERSION 0.1 LANGUAGES C CXX)
+enable_testing()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+include_directories(include)
+link_directories(lib)
+
+#add_subdirectory(source)
+#add_subdirectory(tests)
+
+# Support libraries
+add_library(sxy_graph Point.cpp)
+add_library(utils utils.cpp)
+add_library(intcode_vm Intcode_vm.cpp)
+add_library(sif Space_image.cpp)
+
+target_link_libraries(intcode_vm PRIVATE utils)
+
+# C++ solutions
+add_executable(1901 1901.cpp)
+add_executable(1902 1902.cpp)
+add_executable(1903 1903.cpp)
+add_executable(1904 1904.cpp)
+add_executable(1905 1905.cpp)
+add_executable(1906 1906.cpp)
+target_link_libraries(1906 PRIVATE utils)
+add_executable(1907 1907.cpp)
+target_link_libraries(1907 PRIVATE intcode_vm)
+add_executable(1908 1908.cpp)
+add_executable(1909 1909.cpp)
+target_link_libraries(1909 PRIVATE intcode_vm)
+add_executable(1910 1910.cpp)
+target_link_libraries(1910 PRIVATE sxy_graph)
+add_executable(1911 1911.cpp)
+target_link_libraries(1911 PRIVATE intcode_vm sxy_graph)
+add_executable(1912 1912.cpp)
+add_executable(1913 1913.cpp)
+target_link_libraries(1913 PRIVATE intcode_vm sxy_graph)
+add_executable(1914 1914.cpp)
+add_executable(1915 1915.cpp)
+target_link_libraries(1915 PRIVATE intcode_vm sxy_graph)
+add_executable(1916 1916.cpp)
+#add_executable(1918 1918.cpp)
+#target_link_libraries(1918 PRIVATE sxy_graph)
+add_executable(1919 1919.cpp)
+target_link_libraries(1919 PRIVATE intcode_vm sxy_graph)
+
+add_executable(1902a 1902_alt.cpp)
+target_link_libraries(1902a PRIVATE intcode_vm)
+add_executable(1903a 1903_alt.cpp)
+target_link_libraries(1903a PRIVATE sxy_graph)
+add_executable(1905a 1905_alt.cpp)
+target_link_libraries(1905a PRIVATE intcode_vm)
+
+# C solutions
+#add_executable(1901c 1901.c)
+#add_executable(1902c 1902.c)
+
+#target_link_libraries(1902c PRIVATE sxc_vector)

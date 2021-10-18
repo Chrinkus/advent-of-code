@@ -1,0 +1,5 @@
+#! /bin/bash
+
+# Reads intcode program and outputs each "position: instruction"
+
+cat "$1" | tr ',' '\n' | nl -v 0

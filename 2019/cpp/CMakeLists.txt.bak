@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.13)
+
+project(aoc2019 VERSION 0.1 LANGUAGES C CXX)
+enable_testing()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+include_directories(include)
+link_directories(lib)
+
+#add_subdirectory(source)
+#add_subdirectory(tests)
+
