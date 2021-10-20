@@ -8,6 +8,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Hurt me more
 add_compile_options(-Wall -Wextra -Wpedantic)
 
+include_directories("../../include")
+
 # Selected solutions
 set(solutions
 	"day01.c"
@@ -21,6 +23,3 @@ foreach(file IN LISTS solutions)
 	add_executable("${exe_name}" "${file}")
 endforeach()
 
-# Symlink inputs for ease of running
-#file(CREATE_LINK "${PROJECT_SOURCE_DIR}/inputs"
-#"${PROJECT_SOURCE_DIR}/build/inputs" SYMBOLIC)

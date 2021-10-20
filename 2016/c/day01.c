@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "sxc_vector.h"
+#include "aoc_vector.h"
 
 // Part 1
 enum Facing { NORTH, EAST, SOUTH, WEST };
@@ -31,7 +31,7 @@ int main()
 	printf("Day 1: No Time for a Taxicab\n");
 
 	struct Point_vector pv;
-	sxc_vector_init(pv, struct Point);
+	aoc_vector_init(pv, struct Point);
 
 	struct Point* hq = NULL;
 
@@ -56,9 +56,9 @@ int main()
 				}
 
 				struct Point pt = { x, y };
-				sxc_vector_find(pv, &pt, point_cmp_eq, hq);
+				aoc_vector_find(pv, &pt, point_cmp_eq, hq);
 				if (!hq)
-					sxc_vector_push(pv, pt);
+					aoc_vector_push(pv, pt);
 			}
 		} else {	// Part 1 continued..
 			switch (f) {
