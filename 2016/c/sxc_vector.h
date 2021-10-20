@@ -48,7 +48,7 @@ enum SXC_Vector_scalars {
 
 #define sxc_vector_find(v, tar, cmp, found)				\
 	do {								\
-		for (int i = 0; i < (v).size; ++i) {			\
+		for (size_t i = 0; i < (v).size; ++i) {			\
 			if (cmp( &((v).vec[i]), tar)) {			\
 				found = &((v).vec[i]);			\
 				break;					\
