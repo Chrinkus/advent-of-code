@@ -7,7 +7,6 @@
 struct Int_vector {
 	size_t size;
 	size_t cap;
-	size_t elem_size;
 	int* vec;
 };
 
@@ -73,7 +72,7 @@ int main()
 	printf("Day 2: 1202 Program Alarm\n");
 
 	struct Int_vector vi;
-	aoc_vector_init(vi, int);
+	aoc_vector_init(vi);
 
 	for (int n, c = 0; c != EOF && scanf("%d", &n) == 1; c = getchar())
 		aoc_vector_push(vi, n);
