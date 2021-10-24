@@ -12,9 +12,10 @@ include_directories("../../include")
 
 # Selected solutions
 set(solutions
-	"day01.c"
-	"day02.c"
-	"day03.c"
+	"1601.c"
+	"1602.c"
+	"1603.c"
+	"1604.c"
 )
 
 # Build all the solutions

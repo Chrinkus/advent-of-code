@@ -2,7 +2,7 @@
 #define AOC_VECTOR_H
 
 /**
- * Genderic Vector
+ * Generic Vector
  *
  * All of these macros expect a vector struct of the following definition:
  *
@@ -39,6 +39,8 @@ enum AOC_Vector_scalars {
 		(v).cap = new_cap;					\
 	} while (0)
 
+#define aoc_vector_size(v) (v).size
+
 #define aoc_vector_place(v, val)					\
 	do {								\
 		(v).vec[(v).size++] = (val);				\
@@ -68,6 +70,12 @@ enum AOC_Vector_scalars {
 				break;					\
 			}						\
 		}							\
+	} while (0)
+
+#define aoc_vector_foreach(v, func)					\
+	do {								\
+		for (size_t i = 0; i < (v).size; ++i) 			\
+			func(&(v).vec[i]);				\
 	} while (0)
 
 #endif//AOC_VECTOR_H
