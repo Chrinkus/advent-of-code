@@ -19,6 +19,11 @@ while [ $# -ne 0 ]; do
 		-t|--title)
 			TITLE="$2"
 			shift 2;;
+		-h|--help)
+			echo "Usage: $0 -y year -d day -t title"
+			exit 0;;
+		*)
+			exit 1;;
 	esac
 done
 

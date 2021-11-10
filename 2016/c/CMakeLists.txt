@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Hurt me more
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Wextra -Wpedantic -O2)
 
 include_directories("../../include")
 
@@ -16,6 +16,7 @@ set(solutions
 	"1602.c"
 	"1603.c"
 	"1604.c"
+	"1605.c"
 )
 
 # Build all the solutions
@@ -23,4 +24,8 @@ foreach(file IN LISTS solutions)
 	get_filename_component(exe_name "${file}" NAME_WE)
 	add_executable("${exe_name}" "${file}")
 endforeach()
+
+# SSL development package needed for Day 5
+# Ubuntu package: libssl-dev
+target_link_libraries(1605 ssl crypto)
 
