@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <time.h>
+
+#include <aoc_string.h>
 
 #include <openssl/md5.h>
 
@@ -8,24 +12,34 @@ enum { PASSWORD_LEN = 8, ZERO_COUNT = 5, BUFFMAX = 64 };
 
 const char* test_md5(const char* hash, char ch, int count);
 int hchtoi(const char ch);
+double diffclock(const clock_t t1, const clock_t t2);
+double sinceclock(const clock_t t);
 
 int main()
 {
 	printf("Advent of Code 2016\n");
 	printf("Day 5: How About a Nice Game of Chess?\n");
 
-	char* input = "ugkcyxxp";
-
+	String input;
+	aoc_string_init(&input);
+	for (int c; (c = getchar()) != EOF; )
+		if (isalpha(c))
+			aoc_string_push(&input, c);
 	char part1[PASSWORD_LEN+1];
-
 	char part2[PASSWORD_LEN+1];
-	for (int i = 0; i < PASSWORD_LEN; ++i)
-		part2[i] = '_';
+
+	memset(part2, '_', PASSWORD_LEN);
 	part2[PASSWORD_LEN] = '\0';
 
+	printf("\nInput: %s\n\n", input.str);
+	printf("Password     ID     Time (s)\n");
+	printf("======== ========== ========\n");
+	const char* fmt = "\r%s %10d %8.3f";
+
+	clock_t start = clock();
 	for (int i = 0, k = 0, l = PASSWORD_LEN; l; ++i) {
 		char message[BUFFMAX];
-		sprintf(message, "%s%d", input, i);
+		sprintf(message, "%s%d", input.str, i);
 
 		unsigned char digest[MD5_DIGEST_LENGTH];
 		MD5((unsigned char*)message, strlen(message), digest);
@@ -34,6 +48,8 @@ int main()
 		for (int j = 0; j < MD5_DIGEST_LENGTH; ++j)
 			sprintf(&result[j*2], "%02x", digest[j]);
 
+		printf(fmt, part2, i, sinceclock(start));
+		fflush(stdout);
 		if (test_md5(result, '0', ZERO_COUNT)) {
 			if (k < PASSWORD_LEN)
 				part1[k++] = result[ZERO_COUNT];
@@ -42,15 +58,20 @@ int main()
 			if (n < PASSWORD_LEN && part2[n] == '_') {
 				part2[n] = result[ZERO_COUNT+1];
 				--l;
-				printf("%s\n", part2);
+
+				printf(fmt, part2, i, sinceclock(start));
+				printf("\n");
 			}
 		}
 	}
 
 	part1[PASSWORD_LEN] = '\0';
 
+	printf("\n");
 	printf("Part 1: %s\n", part1);
 	printf("Part 2: %s\n", part2);
+
+	aoc_string_free(&input);
 
 	return EXIT_SUCCESS;
 }
@@ -87,5 +108,15 @@ int hchtoi(const char ch)
 	}
 
 	return n;
+}
+
+double diffclock(const clock_t t1, const clock_t t2)
+{
+	return (double)(t1 - t2) / CLOCKS_PER_SEC;
+}
+
+double sinceclock(const clock_t t)
+{
+	return (double)(clock() - t) / CLOCKS_PER_SEC;
 }
 
