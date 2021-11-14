@@ -9,7 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_compile_options(-Wall -Wextra -Wpedantic -O2)
 
 # My external library
-set(LIBSXC_DIR "/home/$ENV{USER}/.local/libsxc")
+set(LIBSXC_DIR "/home/$ENV{USER}/.local")
 
 include_directories("${LIBSXC_DIR}/include")
 link_directories("${LIBSXC_DIR}/lib")
@@ -21,6 +21,7 @@ set(solutions
 	"1603.c"
 	"1604.c"
 	"1605.c"
+	"1606.c"
 )
 
 # Build all the solutions
