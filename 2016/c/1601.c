@@ -1,38 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "aoc_vector.h"
+#include <sxc_vector.h>
+#include <sxc_point.h>	// SXC_Point, SXC_Point_vector
 
-// Part 1
 enum Facing { NORTH, EAST, SOUTH, WEST };
 
-// Part 2
-struct Point {
-	int x;
-	int y;
-};
-
-int point_cmp_eq(const struct Point* a, const struct Point* b)
-{
-	return (a->x == b->x) && (a->y == b->y);
-}
-
-struct Point_vector {
-	size_t size;
-	size_t cap;
-	struct Point* vec;
-};
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 int main()
 {
 	printf("Advent of Code 2016\n");
 	printf("Day 1: No Time for a Taxicab\n");
 
-	struct Point_vector pv;
-	aoc_vector_init(pv);
+	struct SXC_Point_vector pv;
+	sxc_vector_init(pv);
 
-	struct Point* hq = NULL;
+	struct SXC_Point* hq = NULL;
 
 	int x = 0;
 	int y = 0;
@@ -54,10 +36,10 @@ int main()
 				case WEST:	--x;	break;
 				}
 
-				struct Point pt = { x, y };
-				aoc_vector_find(pv, &pt, point_cmp_eq, hq);
+				struct SXC_Point pt = { x, y };
+				sxc_vector_find(pv, &pt, sxc_point_cmp, hq);
 				if (!hq)
-					aoc_vector_push(pv, pt);
+					sxc_vector_push(pv, pt);
 			}
 		} else {	// Part 1 continued..
 			switch (f) {
@@ -71,6 +53,8 @@ int main()
 
 	printf("Part 1: %d\n", abs(x) + abs(y));
 	printf("Part 2: %d\n", abs(hq->x) + abs(hq->y));
+
+	sxc_vector_free(pv);
 
 	return EXIT_SUCCESS;
 }

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#include <aoc_string.h>
+#include <sxc_string.h>
 
 #include <openssl/md5.h>
 
@@ -21,10 +21,10 @@ int main()
 	printf("Day 5: How About a Nice Game of Chess?\n");
 
 	String input;
-	aoc_string_init(&input);
+	sxc_string_init(&input);
 	for (int c; (c = getchar()) != EOF; )
 		if (isalpha(c))
-			aoc_string_push(&input, c);
+			sxc_string_push(&input, c);
 	char part1[PASSWORD_LEN+1];
 	char part2[PASSWORD_LEN+1];
 
@@ -71,7 +71,7 @@ int main()
 	printf("Part 1: %s\n", part1);
 	printf("Part 2: %s\n", part2);
 
-	aoc_string_free(&input);
+	sxc_string_free(&input);
 
 	return EXIT_SUCCESS;
 }
