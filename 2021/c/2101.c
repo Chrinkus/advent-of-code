@@ -14,8 +14,7 @@ int main()
 	for (int prev = 0, curr, i = 0, win[WINSIZE], prev_sum = 0;
 			scanf("%d", &curr) == 1; ++i) {
 		// Part 1
-		if (prev && curr > prev)
-			++part1;
+		part1 += prev && curr > prev;
 		prev = curr;
 
 		// Part 2
@@ -25,9 +24,7 @@ int main()
 		for (int j = 0; j < WINSIZE; ++j)
 			curr_sum += win[j];
 
-		if (i >= WINSIZE)
-			part2 += curr_sum > prev_sum;
-
+		part2 += i >= WINSIZE && curr_sum > prev_sum;
 		prev_sum = curr_sum;
 	}
 
