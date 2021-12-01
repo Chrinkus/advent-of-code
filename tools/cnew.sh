@@ -8,6 +8,11 @@
 # - creates a file titled 2001.c in the current directory
 # - file is set up with header and result output ready to go
 
+# Sensible defaults
+YEAR=$(date +%Y)
+DAY=$(TZ="America/New_York"; date +%d)
+TITLE="UNKNOWN"
+
 while [ $# -ne 0 ]; do
 	case "$1" in
 		-y|--year)
@@ -60,5 +65,6 @@ int main()
 
 	return EXIT_SUCCESS;
 }
+
 _EOF_
 
