@@ -1,6 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//Terse like a hearse.
+/*
+int main()
+{
+	int p1=0, p2=0;
+	for (int p=0, i=0, a[3], c; scanf("%d", &c) == 1; a[i++%3] = p = c) {
+		p1 += p && c > p;
+		p2 += i >= 3 && c > a[i%3];
+	}
+	printf("%d, %d\n", p1, p2);
+}
+*/
+// Original solution
 enum { WINSIZE = 3 };
 
 int main()
