@@ -10,7 +10,7 @@
 
 # Sensible defaults
 YEAR=$(date +%Y)
-DAY=$(TZ="America/New_York"; date +%d)
+DAY=$(TZ="America/New_York" date +%d)
 TITLE="UNKNOWN"
 
 while [ $# -ne 0 ]; do
