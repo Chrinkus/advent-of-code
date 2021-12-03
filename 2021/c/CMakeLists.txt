@@ -18,6 +18,7 @@ link_directories("${LIBSXC_DIR}/lib")
 set(solutions
 	"2101.c"
 	"2102.c"
+	"2103.c"
 )
 
 # Build all the solutions
