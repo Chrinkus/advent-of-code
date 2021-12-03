@@ -1,82 +1,96 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
+#include <stdint.h>
 
 #include <sxc_string.h>
 #include <sxc_vector.h>
-#include <sxc_vector_types.h>
 
-// Part 1
-char most_common_at_pos(const struct Charp_vector* v, int pos)
+// Data
+struct U16_vector {
+	size_t siz;
+	size_t cap;
+	uint16_t* vec;
+};
+
+struct Report {
+	struct U16_vector data;
+	uint16_t bits;
+	uint16_t mask;
+};
+
+struct Report* read_report(FILE* stream, struct Report* r)
+{
+	String s;
+	sxc_string_init(&s);
+	for (int n; (n = sxc_getline(stream, &s)) > 0; sxc_string_clear(&s)) {
+		sxc_vector_push(r->data, strtol(sxc_string_str(&s), NULL, 2));
+		if (!r->bits)
+			r->bits = n;
+	}
+	r->mask = (1U << r->bits) - 1;
+
+	sxc_string_free(&s);
+	return r;
+}
+
+// Compare
+typedef int (*Common_at_pos)(const struct U16_vector* v, int pos);
+
+int most_common_bit_at_pos(const struct U16_vector* v, int pos)
+{
+	int count[2] = { 0, 0 };
+	for (size_t i = 0; i < sxc_vector_size(*v); ++i)
+		++count[(sxc_vector_get(*v, i) >> pos) & 1U];
+	return count[1] >= count[0];
+}
+
+int least_common_bit_at_pos(const struct U16_vector* v, int pos)
 {
 	int count[2] = { 0, 0 };
 	for (size_t i = 0; i < sxc_vector_size(*v); ++i) {
-		++count[sxc_vector_get(*v, i)[pos] - '0'];
+		++count[(sxc_vector_get(*v, i) >> pos) & 1U];
 	}
-	return count[0] > count[1] ? '0' : '1';
+	return count[1] < count[0];
 }
 
-char* calculate_gamma(const struct Charp_vector* v)
+// Part 1
+uint16_t calculate_gamma(const struct Report* r)
 {
-	int len = strlen(sxc_vector_get(*v, 0));
-	char* buff = malloc(len+1);
-	for (int i = 0; i < len; ++i)
-		buff[i] = most_common_at_pos(v, i);
-	buff[len] = '\0';
-	return buff;
-}
-
-char* get_compliment(const char* s)
-{
-	int len = strlen(s);
-	char* buff = malloc(len+1);
-	for (int i = 0; i < len; ++i)
-		buff[i] = s[i] == '0' ? '1' : '0';
-	buff[len] = '\0';
-	return buff;
+	uint16_t gamma = 0;
+	for (int i = 0; i < r->bits; ++i)
+		if (most_common_bit_at_pos(&r->data, i))
+			gamma |= 1U << i;
+	return gamma;
 }
 
 // Part 2
-char least_common_at_pos(const struct Charp_vector* v, int pos)
-{
-	int count[2] = { 0, 0 };
-	for (size_t i = 0; i < sxc_vector_size(*v); ++i) {
-		++count[sxc_vector_get(*v, i)[pos] - '0'];
-	}
-	return count[0] <= count[1] ? '0' : '1';
-}
-
-typedef char (*Common_at_pos)(const struct Charp_vector*, int);
-
-void filter_by_cmp(const struct Charp_vector* v, int len, int pos,
-		Common_at_pos cmp, char** out)
+void filter_pos_by_cmp(const struct U16_vector* v, int pos, Common_at_pos cmp,
+		uint16_t* out)
 {
 	if (sxc_vector_size(*v) == 1) {
-		*out = strdup(sxc_vector_get(*v, 0));
+		*out = sxc_vector_get(*v, 0);
 		return;
 	} 
 
-	struct Charp_vector filtered;
-	sxc_vector_init(filtered);
-	char ch = cmp(v, pos);
-	for (size_t j = 0; j < sxc_vector_size(*v); ++j) {
-		char* p = sxc_vector_get(*v, j);
-		if (p[pos] == ch)
-			sxc_vector_push(filtered, p);
+	struct U16_vector f;
+	sxc_vector_init(f);
+	uint16_t common = cmp(v, pos) << pos;
+	for (size_t i = 0; i < sxc_vector_size(*v); ++i) {
+		uint16_t n = sxc_vector_get(*v, i);
+		if ((n & (1U << pos)) == common)
+			sxc_vector_push(f, n);
 	}
 
-	filter_by_cmp(&filtered, len, pos+1, cmp, out);
-
-	sxc_vector_free(filtered);
+	filter_pos_by_cmp(&f, pos-1, cmp, out);
+	sxc_vector_free(f);
 }
 
-char* recursive_get_diagnostic(const struct Charp_vector* v, Common_at_pos cmp)
+uint16_t get_diagnostic(const struct Report* r, Common_at_pos cmp)
 {
-	int len = strlen(sxc_vector_get(*v, 0));
-	char* diag = NULL;
+	uint16_t diag = 0;
 
-	filter_by_cmp(v, len, 0, cmp, &diag);
+	filter_pos_by_cmp(&r->data, r->bits-1, cmp, &diag);
 
 	return diag;
 }
@@ -86,36 +100,22 @@ int main()
 	printf("Advent of Code 2021\n");
 	printf("Day 03: Binary Diagnostic\n");
 
-	// Read input
-	struct Charp_vector input;
-	sxc_vector_init(input);
+	struct Report r = { 0 };
+	sxc_vector_init(r.data);
+	if (!read_report(stdin, &r)) {
+		fprintf(stderr, "Failed to read report\n");
+		return EXIT_FAILURE;
+	}
 
-	String s;
-	sxc_string_init(&s);
-	for ( ; sxc_getline(stdin, &s); sxc_string_clear(&s))
-		sxc_vector_push(input, strdup(sxc_string_str(&s)));
-	sxc_string_free(&s);
-
-	char* gbuff = calculate_gamma(&input);
-	char* ebuff = get_compliment(gbuff);
-	char* obuff = recursive_get_diagnostic(&input, most_common_at_pos);
-	char* cbuff = recursive_get_diagnostic(&input, least_common_at_pos);
-
-	unsigned gam = strtol(gbuff, NULL, 2);
-	unsigned eps = strtol(ebuff, NULL, 2);
-	unsigned oxy = strtol(obuff, NULL, 2);
-	unsigned co2 = strtol(cbuff, NULL, 2);
-
-	free(gbuff);
-	free(ebuff);
-	free(obuff);
-	free(cbuff);
-	for (size_t i = 0; i < sxc_vector_size(input); ++i)
-		free(sxc_vector_get(input, i));
-	sxc_vector_free(input);
+	uint16_t gam = calculate_gam(&r);
+	uint16_t eps = (~gam) & r.mask;
+	uint16_t oxy = get_diagnostic(&r, most_common_bit_at_pos);
+	uint16_t co2 = get_diagnostic(&r, least_common_bit_at_pos);
 
 	printf("Part 1: %u\n", gam * eps);
 	printf("Part 2: %u\n", oxy * co2);
+
+	sxc_vector_free(r.data);
 
 	return EXIT_SUCCESS;
 }
