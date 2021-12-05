@@ -55,10 +55,11 @@ cat << _EOF_ > $FILE
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "aoc_banner.h"
+
 int main()
 {
-	printf("Advent of Code ${YEAR}\n");
-	printf("Day ${DAY}: ${TITLE}\n");
+	aoc_banner_2021("${DAY}", "${TITLE}");
 
 	printf("Part 1: \n");
 	printf("Part 2: \n");
