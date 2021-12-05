@@ -46,12 +46,12 @@ const int* check_cols(const int* card)
 
 int* check_cards(struct Card_vector* v)
 {
-	for (size_t i = 0; i < sxc_vector_size(*v); ++i) {
-		int* card = sxc_vector_get(*v, i);
+	for (size_t i = 0; i < sxc_vector_size(v); ++i) {
+		int* card = sxc_vector_get(v, i);
 		if (!card) continue;	// winning cards are removed
 
 		if (check_rows(card) || check_cols(card)) {
-			sxc_vector_get(*v, i) = NULL;
+			sxc_vector_get(v, i) = NULL;
 			return card;
 		}
 	}
@@ -60,8 +60,8 @@ int* check_cards(struct Card_vector* v)
 
 void mark_cards(struct Card_vector* v, int ball)
 {
-	for (size_t i = 0; i < sxc_vector_size(*v); ++i) {
-		int* card = sxc_vector_get(*v, i);
+	for (size_t i = 0; i < sxc_vector_size(v); ++i) {
+		int* card = sxc_vector_get(v, i);
 		if (!card) continue;	// winning cards are removed
 
 		for (int j = 0; j < CARDSIZE; ++j)
@@ -86,26 +86,26 @@ int main()
 
 	// Read balls
 	struct Int_vector balls;
-	sxc_vector_init(balls);
+	sxc_vector_init(&balls);
 	for (int n, c = ','; c != '\n' && scanf("%d", &n) == 1; c = getchar())
-		sxc_vector_push(balls, n);
+		sxc_vector_push(&balls, n);
 
 	// Read cards
 	struct Card_vector cards;
-	sxc_vector_init(cards);
+	sxc_vector_init(&cards);
 	while (!feof(stdin)) {
 		int* card = malloc(sizeof(int) * CARDSIZE);
 		for (int i = 0, n; i < CARDSIZE && scanf("%d ", &n) == 1; ++i)
 			card[i] = n;
-		sxc_vector_push(cards, card);
+		sxc_vector_push(&cards, card);
 	}
 
 	// PLAY!!
 	int part1 = 0;
 	int part2 = 0;
-	for (size_t i = 0, cards_in_play = sxc_vector_size(cards);
-			i < sxc_vector_size(balls); ++i) {
-		int ball = sxc_vector_get(balls, i);
+	for (size_t i = 0, cards_in_play = sxc_vector_size(&cards);
+			i < sxc_vector_size(&balls); ++i) {
+		int ball = sxc_vector_get(&balls, i);
 		mark_cards(&cards, ball);
 
 		for (int* bingo = NULL; (bingo = check_cards(&cards));
@@ -122,11 +122,11 @@ int main()
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
 
-	sxc_vector_free(balls);
-	for (size_t i = 0; i < sxc_vector_size(cards); ++i) {
-		free(sxc_vector_get(cards, i));
+	sxc_vector_free(&balls);
+	for (size_t i = 0; i < sxc_vector_size(&cards); ++i) {
+		free(sxc_vector_get(&cards, i));
 	}
-	sxc_vector_free(cards);
+	sxc_vector_free(&cards);
 
 	return EXIT_SUCCESS;
 }
