@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "aoc_banner.h"
+
 enum { BUFFMAX = 8 };
 
 int main()
 {
-	printf("Advent of Code 2021\n");
-	printf("Day 02: Dive!\n");
+	aoc_banner_2021("02", "Dive!");
 
 	int x = 0, y1 = 0, y2 = 0;	// aim == y1
 

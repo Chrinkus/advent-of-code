@@ -4,6 +4,8 @@
 #include <sxc_vector.h>
 #include <sxc_vector_types.h>
 
+#include "aoc_banner.h"
+
 enum { ROWLEN = 5, NUMROWS = 5, CARDSIZE = ROWLEN * NUMROWS, MARKED = -1 };
 
 struct Card_vector {
@@ -81,8 +83,7 @@ int tally_score(const int* card, const int ball)
 
 int main()
 {
-	printf("Advent of Code 2021\n");
-	printf("Day 04: Giant Squid\n");
+	aoc_banner_2021("04", "Giant Squid");
 
 	// Read balls
 	struct Int_vector balls;

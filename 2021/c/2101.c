@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "aoc_banner.h"
+
 //Terse like a hearse.
 /*
 int main()
@@ -13,13 +15,12 @@ int main()
 	printf("%d, %d\n", p1, p2);
 }
 */
-// Original solution
+
 enum { WINSIZE = 3 };
 
 int main()
 {
-	printf("Advent of Code 2021\n");
-	printf("Day 1: Sonar Sweep\n");
+	aoc_banner_2021("01", "Sonar Sweep");
 
 	int part1 = 0;
 	int part2 = 0;

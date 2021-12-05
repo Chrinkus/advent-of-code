@@ -6,6 +6,8 @@
 #include <sxc_string.h>
 #include <sxc_vector.h>
 
+#include "aoc_banner.h"
+
 // Data
 struct U16_vector {
 	size_t siz;
@@ -97,8 +99,7 @@ uint16_t get_diagnostic(const struct Report* r, Common_at_pos cmp)
 
 int main()
 {
-	printf("Advent of Code 2021\n");
-	printf("Day 03: Binary Diagnostic\n");
+	aoc_banner_2021("03", "Binary Diagnostic");
 
 	struct Report r = { 0 };
 	sxc_vector_init(&r.data);
