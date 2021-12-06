@@ -105,6 +105,12 @@ void aoc_report_ints(const int part1, const int part2)
 	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
 }
 
+void aoc_report_sizes(const size_t part1, const size_t part2)
+{
+	printf(TCINV "Part 1:" TCRINV " %zu\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %zu\n", part2);
+}
+
 void aoc_report_strings(const char* part1, const char* part2)
 {
 	printf(TCINV "Part 1:" TCRINV " %s\n", part1);
