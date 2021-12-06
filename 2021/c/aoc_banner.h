@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #include <sxc_term_color.h>
 
 const char* aoc_tree_plain = ""		\
@@ -93,16 +95,16 @@ void aoc_banner_2021(const char* day, const char* title)
 			aoc_xmas_colors,
 			AOC_NUM_COLORS);
 
-	printf("%s\n\n", aoc_sub_color_right);
-	printf(TCINV "Day %s:" TCRINV " ", day);
+	printf("%s\n", aoc_sub_color_right);
+	printf(TCBWHT "Day %s:" TCDEF " ", day);
 	sxc_termcolor_altw(title, aoc_xmas_colors, AOC_NUM_COLORS);
-	printf("\n");
+	printf("\n\n");
 }
 
-void aoc_report_ints(const int part1, const int part2)
+void aoc_report_ints(const int64_t part1, const int64_t part2)
 {
-	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
-	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
+	printf(TCINV "Part 1:" TCRINV " %ld\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %ld\n", part2);
 }
 
 void aoc_report_sizes(const size_t part1, const size_t part2)

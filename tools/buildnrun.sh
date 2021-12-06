@@ -14,8 +14,8 @@ done
 cmake --build . --target $DAY
 
 if [ -n "$TEST" ]; then
-	echo "$TEST" | ./$DAY
+	time echo "$TEST" | ./$DAY
 else
-	./$DAY < "/home/${USER}/Documents/AoC_Inputs/${DAY}.txt"
+	time ./$DAY < "/home/${USER}/Documents/AoC_Inputs/${DAY}.txt"
 fi
 

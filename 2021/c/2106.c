@@ -1,76 +1,69 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <limits.h>
 
 #include "aoc_banner.h"
 
-#include <sxc_vector.h>
-#include <sxc_vector_types.h>
-
 enum {
-	RESET = 6, NEWFISH = 8,
-	PART_1_DAYS = 256,
-	PART_2_DAYS = 256 - PART_1_DAYS,
+	SCHOOL_LEN = 7,
+	SPAWN_LEN = 9,
+	PART1_DAYS = 80,
+	PART2_DAYS = 256
 };
 
-struct U8_vector {
-	size_t siz;
-	size_t cap;
-	uint8_t* vec;
-};
-
-void age_fish(struct U8_vector* school, int days)
+void advance_time(int64_t school[], int64_t spawn[], int days, int* day)
 {
-	struct U8_vector spawned;
-	sxc_vector_init(&spawned);
-
-	int64_t prev = 0;
-	for (int j = 0; j < days; ++j) {
-		int64_t start = sxc_vector_size(school);
-		for (size_t i = 0; i < sxc_vector_size(school); ++i) {
-			uint8_t* fish = sxc_vector_getp(school, i);
-			--(*fish);
-			if (*fish > NEWFISH) {
-				*fish = RESET;
-				sxc_vector_push(&spawned, NEWFISH);
-			}
-		}
-		for (size_t i = 0; i < sxc_vector_size(&spawned); ++i)
-			sxc_vector_push(school, sxc_vector_get(&spawned, i));
-
-		int64_t end = sxc_vector_size(school);
-		int64_t growth = end - start;
-		printf("Day: %d, Growth: %lld, Increase: %lld\n",
-				j, growth, growth - prev);
-		prev = growth;
-		spawned.siz = 0;
+	for ( ; *day < days; ++*day) {
+		int64_t tmp = spawn[*day % SPAWN_LEN];
+		spawn[*day % SPAWN_LEN] += school[*day % SCHOOL_LEN];
+		school[*day % SCHOOL_LEN] += tmp;
 	}
+}
 
-	sxc_vector_free(&spawned);
+int64_t sum_array(int64_t a[], int len)
+{
+	int64_t sum = 0;
+	for (int i = 0; i < len; ++i)
+		sum += a[i];
+	return sum;
+}
+
+int64_t tally_fish(int64_t school[], int64_t spawn[])
+{
+	return sum_array(school, SCHOOL_LEN) + sum_array(spawn, SPAWN_LEN);
 }
 
 int main()
 {
 	aoc_banner_2021("06", "Lanternfish");
 
-	struct U8_vector school;
-	sxc_vector_init(&school);
-	for (int n, c = ','; c != '\n' && scanf("%d", &n) == 1; c = getchar())
-		sxc_vector_push(&school, n);
+	int day = 0;
+	int64_t school[SCHOOL_LEN] = { 0 };
+	int64_t spawn[SPAWN_LEN] = { 0 };
 
-	age_fish(&school, PART_1_DAYS);
-	size_t part1 = sxc_vector_size(&school);
+	// Read input
+	int size = 0, alloc = 8;
+	int* input = malloc(sizeof(int) * alloc);
+	for (int n; scanf("%d", &n) == 1; getchar()) {
+		if (size == alloc) {
+			alloc *= 2;
+			input = realloc(input, sizeof(int) * alloc);
+		}
+		input[size++] = n;
+	}
 
-	/* Too long!
-	age_fish(&school, PART_2_DAYS);
-	size_t part2 = sxc_vector_size(&school);
-	*/
-	size_t part2 = PART_2_DAYS;
+	// Set initial state
+	for (int i = 0; i < size; ++i)
+		++school[input[i]];
+	free(input);
 
-	aoc_report_sizes(part1, part2);
+	advance_time(school, spawn, PART1_DAYS, &day);
+	int64_t part1 = tally_fish(school, spawn);
 
-	sxc_vector_free(&school);
+	advance_time(school, spawn, PART2_DAYS, &day);
+	int64_t part2 = tally_fish(school, spawn);
+
+	aoc_report_ints(part1, part2);
 
 	return EXIT_SUCCESS;
 }
