@@ -2,24 +2,48 @@
 
 #include <sxc_term_color.h>
 
-const char* aoc_tree_plain = ""	\
-	"        |        "	\
-	"       \\|/       "	\
-	"      --*--      "	\
-	"       >o<       "	\
-	"      >O<<<      "	\
-	"     >>o>>*<     "	\
-	"    >o<<<o<<<    "	\
-	"   >>@>*<<O<<<   "	\
-	"  >o>>@>>>o>o<<  "	\
-	" >*>>*<o<@<o<<<< "	\
-	">o>o<<<O<*>>*>>O<"	\
-	"   _ __| |__ _   ";
+const char* aoc_tree_plain = ""		\
+	"          |        \n"		\
+	"         \\|/       \n"	\
+	"        --*--      \n"		\
+	"         >o<       \n"		\
+	"        >O<<<      \n"		\
+	"       >>o>>*<     \n"		\
+	"      >o<<<o<<<    \n"		\
+	"     >>@>*<<O<<<   \n"		\
+	"    >o>>@>>>o>o<<  \n"		\
+	"   >*>>*<o<@<o<<<< \n"		\
+	"  >o>o<<<O<*>>*>>O<\n"		\
+	"     _ __| |__ _   ";
+
+const char* aoc_tree_color = ""		\
+	TC5YEL "          |        \n"		\
+	"         \\|/       \n"	\
+	"        --" TCBLNK "*" TCRBLNK "--      \n"		\
+	TCNGRN "         >" TC5ORG "o" TCNGRN "<       \n"		\
+	TCNGRN "        >" TCBBLU "O" TCNGRN "<<<      \n"		\
+	TCNGRN "       >>" TC5ORG "o" TCNGRN ">>"
+	TC5YEL "*" TCNGRN "<     \n"		\
+	TCNGRN "      >" TC5ORG "o" TCNGRN "<<<"
+	TC5ORG "o" TCNGRN "<<<    \n"		\
+	TCNGRN "     >>" TCBRED "@" TCNGRN ">"
+	TC5YEL "*" TCNGRN "<<" TCBBLU "O" TCNGRN "<<<   \n"		\
+	TCNGRN "    >" TC5ORG "o" TCNGRN ">>"
+	TCBRED "@" TCNGRN ">>>" TC5ORG "o"
+	TCNGRN ">" TC5ORG "o" TCNGRN "<<  \n"		\
+	TCNGRN "   >" TC5YEL "*" TCNGRN ">>"
+	TC5YEL "*" TCNGRN "<" TC5ORG "o" TCNGRN "<"
+	TCBRED "@" TCNGRN "<" TC5ORG "o" TCNGRN "<<<< \n"		\
+	TCNGRN "  >" TC5ORG "o" TCNGRN ">"
+	TC5ORG "o" TCNGRN "<<<" TCBBLU "O"
+	TCNGRN "<" TC5YEL "*" TCNGRN ">>" TC5YEL "*"
+	TCNGRN ">>" TCBBLU "O" TCNGRN "<\n"		\
+	TC5GRY "     _ __| |__ _   " TCDEF;
 
 const char* aoc_sub_plain = ""		\
 	"           o           \n"	\
 	"  _|______/|           \n"	\
-	" /* * * * *\\/\\  . ' , '\n"	\
+	" /' ' ' ' '\\/\\  . ' , '\n"	\
 	"( )\\\\\\\\___ =|>~. ' .   \n"	\
 	" \\____(___)/\\/  ' .  , \n"	\
 	",/,/      \\|           \n"	\
@@ -28,20 +52,62 @@ const char* aoc_sub_plain = ""		\
 const char* aoc_sub_color = ""		\
 	"           o           \n"	\
 	"  _|______/|           \n"	\
-	" /" TCBGRN "* " TCBRED "* " TCBGRN "* "	\
-	TCBRED "* " TCBGRN "*" TCDEF "\\/\\" TCNBLU "  . ' , '\n" TCDEF	\
+	" /" TCBGRN "' " TCBRED "' " TCBGRN "' "	\
+	TCBRED "' " TCBGRN "'" TCDEF "\\/\\" TCNBLU "  . ' , '\n" TCDEF	\
 	TCBCYN "( )" TCDEF "\\\\\\\\___ =|>" TCNBLU "~. ' .   \n" TCDEF	\
 	" \\____(___)/\\/" TCNBLU "  ' .  , \n"	TCDEF	\
 	",/,/      \\|           \n"	\
 	"           o           ";
 
+const char* aoc_sub_plain_right = ""	\
+	"           o           \n"	\
+	"           |\\______|_  \n"	\
+	"' , ' .  /\\/' ' ' ' '\\ \n"	\
+	"   . ' .~<|= ___////( )\n"	\
+	" ,  . '  \\/\\(___)____/ \n"	\
+	"           |/      \\,\\,\n"	\
+	"           o           ";
+
+const char* aoc_sub_color_right = ""	\
+	"           o           \n"	\
+	"           |\\______|_  \n"	\
+	TCBBLU "' , ' ." TCDEF "  /\\/" TCBGRN "' " TCBRED "' "	\
+	TCBGRN "' " TCBRED "' " TCBGRN "'" TCDEF "\\ \n"	\
+	TCBBLU "   . ' ." TCDEF "~<|= ___////" TCBCYN "( )\n" TCDEF	\
+	TCBBLU " ,  . '" TCDEF "  \\/\\(___)____/ \n"	\
+	"           |/      \\,\\,\n"	\
+	"           o           ";
+
+enum { AOC_NUM_COLORS = 3 };
+
+const int aoc_xmas_colors[AOC_NUM_COLORS] = {
+	SXC_TCB_RED,
+	SXC_TCB_GRN,
+	SXC_TCB_WHT,
+};
+
 void aoc_banner_2021(const char* day, const char* title)
 {
-	int xmas_colors[3] = { SXC_TCB_RED, SXC_TCB_GRN, SXC_TCB_WHT };
-	sxc_termcolor_altc("Advent of Code 2021\n", xmas_colors, 3);
-	printf("%s\n", aoc_sub_color);
-	printf(TCBWHT "Day %s: " TCDEF, day);
-	sxc_termcolor_altw(title, xmas_colors, 3);
+	printf(TCRES "\n");
+	sxc_termcolor_altc("Advent of Code 2021\n",
+			aoc_xmas_colors,
+			AOC_NUM_COLORS);
+
+	printf("%s\n\n", aoc_sub_color_right);
+	printf(TCINV "Day %s:" TCRINV " ", day);
+	sxc_termcolor_altw(title, aoc_xmas_colors, AOC_NUM_COLORS);
 	printf("\n");
+}
+
+void aoc_report_ints(const int part1, const int part2)
+{
+	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
+}
+
+void aoc_report_strings(const char* part1, const char* part2)
+{
+	printf(TCINV "Part 1:" TCRINV " %s\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %s\n", part2);
 }
 

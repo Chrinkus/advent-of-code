@@ -50,6 +50,13 @@ fi
 # File name
 FILE="${YEARFILE}${DAYFILE}.c"
 
+if [ ${YEAR} -eq 2021 ]; then
+	BANNER="aoc_banner_2021(\"${DAY}\", \"${TITLE}\");"
+else
+	BANNER="aoc_banner(\"${YEAR}\", \"${DAY}\", \"${TITLE}\");"
+fi
+	#aoc_banner_2021("${DAY}", "${TITLE}");
+
 # Boilerplate with placeholders
 cat << _EOF_ > $FILE
 #include <stdlib.h>
@@ -59,10 +66,12 @@ cat << _EOF_ > $FILE
 
 int main()
 {
-	aoc_banner_2021("${DAY}", "${TITLE}");
+	${BANNER}
 
-	printf("Part 1: \n");
-	printf("Part 2: \n");
+	int part1 = 0;
+	int part2 = 0;
+
+	aoc_report_ints(part1, part2);
 
 	return EXIT_SUCCESS;
 }
