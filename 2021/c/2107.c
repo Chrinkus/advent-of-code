@@ -6,14 +6,6 @@
 
 #include "aoc_banner.h"
 
-int fuel_hike(int steps)
-{
-	int fuel = 0;
-	for (int n = 1; steps--; ++n)
-		fuel += n;
-	return fuel;
-}
-
 int get_min(int* arr, int len)
 {
 	int min = INT_MAX;
@@ -33,7 +25,7 @@ void find_lowest_cost_positions(const struct Int_vector* v, int max,
 		for (size_t j = 0; j < sxc_vector_size(v); ++j) {
 			const int steps = abs(i - sxc_vector_get(v, j));
 			costs1[i] += steps;
-			costs2[i] += fuel_hike(steps);
+			costs2[i] += steps * (steps + 1) >> 1;
 		}
 
 	*p1 = get_min(costs1, max);
