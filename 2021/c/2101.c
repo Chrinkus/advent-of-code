@@ -42,8 +42,8 @@ int main()
 		prev_sum = curr_sum;
 	}
 
-	printf("Part 1: %d\n", part1);
-	printf("Part 2: %d\n", part2);
+	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
 
 	return EXIT_SUCCESS;
 }

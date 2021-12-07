@@ -144,9 +144,8 @@ int main()
 
 	int part2 = count_danger(sea_floor, xmax * ymax);
 
-	//printf("Part 1: %d\n", part1);
-	//printf("Part 2: %d\n", part2);
-	aoc_report_ints(part1, part2);
+	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
 
 	free(sea_floor);
 	sxc_vector_free(&lines);

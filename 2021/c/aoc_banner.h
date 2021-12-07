@@ -61,6 +61,7 @@ const char* aoc_sub_color = ""		\
 	",/,/      \\|           \n"	\
 	"           o           ";
 
+// Shortened to match event banner length
 const char* aoc_sub_plain_right = ""	\
 	"           o           \n"	\
 	"           |\\______|_  \n"	\
@@ -71,22 +72,34 @@ const char* aoc_sub_plain_right = ""	\
 	"           o           ";
 
 const char* aoc_sub_color_right = ""	\
-	"           o           \n"	\
-	"           |\\______|_  \n"	\
-	TCBBLU "' , ' ." TCDEF "  /\\/" TCBGRN "' " TCBRED "' "	\
+	"       o           \n"	\
+	"       |\\______|_  \n"	\
+	TCBBLU "' ." TCDEF "  /\\/" TCBGRN "' " TCBRED "' "	\
 	TCBGRN "' " TCBRED "' " TCBGRN "'" TCDEF "\\ \n"	\
-	TCBBLU "   . ' ." TCDEF "~<|= ___////" TCBCYN "( )\n" TCDEF	\
-	TCBBLU " ,  . '" TCDEF "  \\/\\(___)____/ \n"	\
-	"           |/      \\,\\,\n"	\
-	"           o           ";
+	TCBBLU " ' ." TCDEF "~<|= ___////" TCBCYN "( )\n" TCDEF	\
+	TCBBLU ". '" TCDEF "  \\/\\(___)____/ \n"	\
+	"       |/      \\,\\,\n"	\
+	"       o           ";
 
-enum { AOC_NUM_COLORS = 3 };
+enum { AOC_NUM_COLORS = 3, AOC_BUFF_LEN = 32 };
 
 const int aoc_xmas_colors[AOC_NUM_COLORS] = {
 	SXC_TCB_RED,
 	SXC_TCB_GRN,
 	SXC_TCB_WHT,
 };
+
+void aoc_banner(const char* year, const char* day, const char* title)
+{
+	char banner[AOC_BUFF_LEN];
+	snprintf(banner, AOC_BUFF_LEN, "Advent of Code %s\n", year);
+	sxc_termcolor_altc(banner, aoc_xmas_colors, AOC_NUM_COLORS);
+
+	printf("%s\n", aoc_tree_color);
+	printf(TCBWHT "Day %s:" TCDEF " ", day);
+	sxc_termcolor_altw(title, aoc_xmas_colors, AOC_NUM_COLORS);
+	printf("\n\n");
+}
 
 void aoc_banner_2021(const char* day, const char* title)
 {
@@ -99,23 +112,5 @@ void aoc_banner_2021(const char* day, const char* title)
 	printf(TCBWHT "Day %s:" TCDEF " ", day);
 	sxc_termcolor_altw(title, aoc_xmas_colors, AOC_NUM_COLORS);
 	printf("\n\n");
-}
-
-void aoc_report_ints(const int64_t part1, const int64_t part2)
-{
-	printf(TCINV "Part 1:" TCRINV " %ld\n", part1);
-	printf(TCINV "Part 2:" TCRINV " %ld\n", part2);
-}
-
-void aoc_report_sizes(const size_t part1, const size_t part2)
-{
-	printf(TCINV "Part 1:" TCRINV " %zu\n", part1);
-	printf(TCINV "Part 2:" TCRINV " %zu\n", part2);
-}
-
-void aoc_report_strings(const char* part1, const char* part2)
-{
-	printf(TCINV "Part 1:" TCRINV " %s\n", part1);
-	printf(TCINV "Part 2:" TCRINV " %s\n", part2);
 }
 

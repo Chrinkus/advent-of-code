@@ -4,6 +4,7 @@
 
 #include <sxc_vector.h>
 #include <sxc_vector_types.h>
+#include <sxc_term_color.h>
 
 #include "aoc_banner.h"
 
@@ -62,7 +63,8 @@ int main()
 	advance_time(PART2_DAYS, &day);
 	int64_t part2 = tally_fish();
 
-	aoc_report_ints(part1, part2);
+	printf(TCINV "Part 1:" TCRINV " %ld\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %ld\n", part2);
 
 	return EXIT_SUCCESS;
 }

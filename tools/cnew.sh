@@ -55,7 +55,6 @@ if [ ${YEAR} -eq 2021 ]; then
 else
 	BANNER="aoc_banner(\"${YEAR}\", \"${DAY}\", \"${TITLE}\");"
 fi
-	#aoc_banner_2021("${DAY}", "${TITLE}");
 
 # Boilerplate with placeholders
 cat << _EOF_ > $FILE
@@ -71,7 +70,8 @@ int main()
 	int part1 = 0;
 	int part2 = 0;
 
-	aoc_report_ints(part1, part2);
+	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
+	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
 
 	return EXIT_SUCCESS;
 }

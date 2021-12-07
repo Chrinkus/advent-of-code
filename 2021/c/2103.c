@@ -113,8 +113,8 @@ int main()
 	uint16_t oxy = get_diagnostic(&r, most_common_bit_at_pos);
 	uint16_t co2 = get_diagnostic(&r, least_common_bit_at_pos);
 
-	printf("Part 1: %u\n", gam * eps);
-	printf("Part 2: %u\n", oxy * co2);
+	printf(TCINV "Part 1:" TCRINV " %u\n", gam * eps);
+	printf(TCINV "Part 2:" TCRINV " %u\n", oxy * co2);
 
 	sxc_vector_free(&r.data);
 

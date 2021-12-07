@@ -26,8 +26,8 @@ int main()
 			break;
 		}
 
-	printf("Part 1: %d\n", x * y1);
-	printf("Part 2: %d\n", x * y2);
+	printf(TCINV "Part 1:" TCRINV " %d\n", x * y1);
+	printf(TCINV "Part 2:" TCRINV " %d\n", x * y2);
 
 	return EXIT_SUCCESS;
 }
