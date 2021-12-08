@@ -61,62 +61,41 @@ int len_cmp(const void* a, const void* b)
 	return strlen(s1) - strlen(s2);
 }
 
-void get_cypher(const struct Entry* entry, uint8_t* cypher, int len)
-	// So.. much.. magic..
+void get_cipher(const struct Entry* entry, uint8_t* cipher, int len)
 {
-	// Uknowns w/n segments
-	uint8_t u5s[3] = { 0 };
-	uint8_t u6s[3] = { 0 };
-
-	// Set '1', '4', '7' and '8', sort unknowns
-	for (int i = 0, j = 0, k = 0; i < len; ++i)
-		switch (i) {
-		case 0:	cypher[1] = atou8(entry->pats[i]);	break;
-		case 1:	cypher[7] = atou8(entry->pats[i]);	break;
-		case 2:	cypher[4] = atou8(entry->pats[i]);	break;
-		case 9:	cypher[8] = atou8(entry->pats[i]);	break;
-		case 3:	/* fallthrough */
-		case 4:	/* fallthrough */
-		case 5:	u5s[j++] = atou8(entry->pats[i]);	break;
-		case 6:	/* fallthrough */
-		case 7:	/* fallthrough */
-		case 8:	u6s[k++] = atou8(entry->pats[i]);	break;
-		}
-
-	// Find '3' from the 5's using '1'
-	for (int i = 0; i < 3; ++i)
-		if ((u5s[i] & cypher[1]) == cypher[1]) {
-			cypher[3] = u5s[i];
-			u5s[i] = 0;
-		}
-	// Find '9' from the 6's using '3'
-	for (int i = 0; i < 3; ++i)
-		if ((u6s[i] & cypher[3]) == cypher[3]) {
-			cypher[9] = u6s[i];
-			u6s[i] = 0;
-		}
-	// Set '5' and '2'
-	for (int i = 0; i < 3; ++i)
-		if (u5s[i]) {
-			if ((cypher[9] & u5s[i]) == u5s[i])
-				cypher[5] = u5s[i];
+	uint8_t mask = (1U << 7) - 1;
+	for (int i = 0; i < len; ++i) {
+		const char* p = entry->pats[i];
+		uint8_t tmp = atou8(p);
+		switch (strlen(p)) {
+		case 2:	cipher[1] = tmp;	break;
+		case 3:	cipher[7] = tmp;	break;
+		case 7:	cipher[8] = tmp;	break;
+		case 4:	cipher[4] = tmp;	break;
+		case 5:
+			if ((~cipher[4] & tmp) == (~cipher[4] & mask))
+				cipher[2] = tmp;
+			else if ((cipher[1] & tmp) == cipher[1])
+				cipher[3] = tmp;
 			else
-				cypher[2] = u5s[i];
-		}
-	// Set '6' and '0'
-	for (int i = 0; i < 3; ++i)
-		if (u6s[i]) {
-			if ((cypher[5] & u6s[i]) == cypher[5])
-				cypher[6] = u6s[i];
+				cipher[5] = tmp;
+			break;
+		case 6:
+			if ((cipher[4] & tmp) == cipher[4])
+				cipher[9] = tmp;
+			else if ((cipher[1] & tmp) == cipher[1])
+				cipher[0] = tmp;
 			else
-				cypher[0] = u6s[i];
+				cipher[6] = tmp;
+			break;
 		}
+	}
 }
 
-int decode_digit(const uint8_t* cypher, int len, const uint8_t bits)
+int decode_digit(const uint8_t* cipher, int len, const uint8_t bits)
 {
 	for (int i = 0; i < len; ++i)
-		if (cypher[i] == bits)
+		if (cipher[i] == bits)
 			return i;
 	return -1;
 }
@@ -125,11 +104,11 @@ int get_decoded_output(const struct Entry* ent)
 {
 	int output = 0;
 
-	uint8_t cypher[NUM_PATS] = { 0 };
-	get_cypher(ent, cypher, NUM_PATS);
+	uint8_t cipher[NUM_PATS] = { 0 };
+	get_cipher(ent, cipher, NUM_PATS);
 
 	for (int i = 0; i < NUM_OUTS; ++i) {
-		uint8_t digit = decode_digit(cypher, NUM_PATS,
+		uint8_t digit = decode_digit(cipher, NUM_PATS,
 				atou8(ent->outs[i]));
 		output = output * 10 + digit;
 	}
