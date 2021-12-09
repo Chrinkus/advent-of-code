@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "aoc_banner.h"
-#include <sxc_vector.h>
 
 enum {
 	NUM_SEGMENTS = 7,
@@ -13,43 +12,11 @@ enum {
 	NUM_OUTS = 4,
 };
 
-struct Entry {
-	char pats[NUM_PATS][SEGBUFF];
-	char outs[NUM_OUTS][SEGBUFF];
-};
-
-struct Entry_vector {
-	size_t siz;
-	size_t cap;
-	struct Entry* vec;
-};
-
-int count_unique_output(struct Entry_vector* v)
-{
-	int count = 0;
-	for (size_t i = 0; i < sxc_vector_size(v); ++i) {
-		struct Entry* p = sxc_vector_getp(v, i);
-		for (int j = 0; j < NUM_OUTS; ++j)
-			switch (strlen(p->outs[j])) {
-			case 2:	// '1'
-			case 4:	// '4'
-			case 3:	// '7'
-			case 7: // '8'
-				++count;
-				break;
-			}
-	}
-	return count;
-}
-
-// Part 2
 uint8_t atou8(const char* s)
 {
 	uint8_t ret = 0;
-	for (uint8_t n = 0; *s; ++s) {
-		n = *s - 'a';
-		ret |= 1U << n;
-	}
+	for ( ; *s; ++s)
+		ret |= 1U << (*s - 'a');
 	return ret;
 }
 
@@ -61,13 +28,12 @@ int len_cmp(const void* a, const void* b)
 	return strlen(s1) - strlen(s2);
 }
 
-void get_cipher(const struct Entry* entry, uint8_t* cipher, int len)
+void solve_cipher(char pats[][SEGBUFF], int len, uint8_t* cipher)
 {
 	uint8_t mask = (1U << 7) - 1;
 	for (int i = 0; i < len; ++i) {
-		const char* p = entry->pats[i];
-		uint8_t tmp = atou8(p);
-		switch (strlen(p)) {
+		uint8_t tmp = atou8(pats[i]);
+		switch (strlen(pats[i])) {
 		case 2:	cipher[1] = tmp;	break;
 		case 3:	cipher[7] = tmp;	break;
 		case 7:	cipher[8] = tmp;	break;
@@ -100,62 +66,46 @@ int decode_digit(const uint8_t* cipher, int len, const uint8_t bits)
 	return -1;
 }
 
-int get_decoded_output(const struct Entry* ent)
+int decode_output(char outs[][SEGBUFF], int outs_len, uint8_t* cipher,
+		int cipher_len)
 {
 	int output = 0;
-
-	uint8_t cipher[NUM_PATS] = { 0 };
-	get_cipher(ent, cipher, NUM_PATS);
-
-	for (int i = 0; i < NUM_OUTS; ++i) {
-		uint8_t digit = decode_digit(cipher, NUM_PATS,
-				atou8(ent->outs[i]));
-		output = output * 10 + digit;
-	}
-
+	for (int i = 0; i < outs_len; ++i)
+		output = output * 10 + decode_digit(cipher, cipher_len,
+				atou8(outs[i]));
 	return output;
-}
-
-int sum_outputs(const struct Entry_vector* v)
-{
-	int sum = 0;
-
-	for (size_t i = 0; i < sxc_vector_size(v); ++i) {
-		struct Entry* p = sxc_vector_getp(v, i);
-
-		qsort(p->pats, NUM_PATS, sizeof(p->pats[0]), len_cmp);
-		sum += get_decoded_output(p);
-	}
-
-	return sum;
 }
 
 int main()
 {
 	aoc_banner_2021("08", "Seven Segment Search");
 
-	struct Entry_vector input;
-	sxc_vector_init(&input);
+	int part1 = 0;
+	int part2 = 0;
 	while (!feof(stdin)) {
-		struct Entry* p;
-		sxc_vector_emplace(&input, p);
-		for (int i = 0; i < NUM_PATS &&
-				scanf("%s ", p->pats[i]) == 1; ++i)
+		// Reads and part 1
+		char pats[NUM_PATS][SEGBUFF];
+		char outs[NUM_OUTS][SEGBUFF];
+		for (int i = 0; i < NUM_PATS && scanf("%s ", pats[i]) == 1; ++i)
 			;
 		getchar();	// burn '|'
 
-		for (int i = 0; i < NUM_OUTS &&
-				scanf("%s ", p->outs[i]) == 1; ++i)
-			;
-	}
+		for (int i = 0; i < NUM_OUTS && scanf("%s ", outs[i]) == 1; ++i)
+			switch (strlen(outs[i])) {
+			case 2:	case 3: case 4: case 7:
+				++part1;
+			}
 
-	int part1 = count_unique_output(&input);
-	int part2 = sum_outputs(&input);
+		// Part 2
+		qsort(pats, NUM_PATS, sizeof(pats[0]), len_cmp);
+		uint8_t cipher[NUM_PATS] = { 0 };
+		solve_cipher(pats, NUM_PATS, cipher);
+
+		part2 += decode_output(outs, NUM_OUTS, cipher, NUM_PATS);
+	}
 
 	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
 	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
-
-	sxc_vector_free(&input);
 
 	return EXIT_SUCCESS;
 }
