@@ -1,5 +1,9 @@
 # Advent of Code 2019
 
+Will come back some day..
+
+![AoC 2019 Calendar](../images/aoc_2019_calendar.png)
+
 Its that time of year again! Odds are some technical misfortune will befall the Santa and it will be up to thousands of programmers around the globe to save Christmas.
 
 This year I will once again be solving the problems using C++. I haven't had much occasion to use this language lately so this will be a great opportunity to get back into shape.
