@@ -39,7 +39,7 @@ int get_syn_points(char ch)
 int64_t get_auto_points(char* const s)
 {
 	int64_t n = 0;
-	for (char* p = s; *p; ++p)
+	for (char* p = s + strlen(s); p-- > s; )	// start at back
 		switch (*p) {
 		case OPAREN:	n = n * AUTO_PTS_MULT + PAREN_AUTO_PTS;	break;
 		case OBRACK:	n = n * AUTO_PTS_MULT + BRACK_AUTO_PTS;	break;
@@ -69,7 +69,7 @@ char is_corrupt(const char* s, char* const stack)
 		case CPAREN:	// fallthrough
 		case CBRACK:	// fallthrough
 		case CBRACE:	// fallthrough
-		case CANGLE:	// fallthrough
+		case CANGLE:
 			if (*(--top) != get_opener(*s))
 				return *s;
 			break;
@@ -82,16 +82,6 @@ char is_corrupt(const char* s, char* const stack)
 	return *s;
 }
 
-void reverse_string(char* s)
-{
-	char* p = s + strlen(s) - 1;
-	for (char tmp; s < p; ++s, --p) {
-		tmp = *s;
-		*s = *p;
-		*p = tmp;
-	}
-}
-
 // Those autotools points are so high!
 struct I64_vector {
 	size_t siz;
@@ -102,12 +92,10 @@ struct I64_vector {
 int int64_cmp(const void* a, const void* b)
 {
 	int64_t tmp = *(const int64_t*) a - *(const int64_t*)b;
-	if (tmp < 0)
-		return -1;
-	if (tmp > 0)
-		return 1;
-	else
-		return 0;
+
+	if (tmp < 0)	return -1;
+	if (tmp > 0)	return 1;
+	else		return 0;
 }
 
 int main()
@@ -126,10 +114,8 @@ int main()
 		char ch = '\0';
 		if ((ch = is_corrupt(s.str, stack)))
 			part1 += get_syn_points(ch);
-		else {
-			reverse_string(stack);
+		else
 			sxc_vector_push(&auto_pts, get_auto_points(stack));
-		}
 		
 		free(stack);
 	}
