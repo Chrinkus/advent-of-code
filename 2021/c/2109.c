@@ -107,7 +107,7 @@ int main()
 			cave.cols = n;
 	}
 	cave.rows = sxc_vector_size(&input) / cave.cols;
-	cave.map = sxc_vector_getp(&input, 0);		// need a vector_xfer
+	sxc_vector_xfer(&input, cave.map);	// cave manages memory now
 
 	int part1 = find_low_point_sums(&cave);
 	int part2 = multiply_basins(&cave);
@@ -115,7 +115,7 @@ int main()
 	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
 	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
 
-	sxc_vector_free(&input);
+	free(cave.map);
 
 	return EXIT_SUCCESS;
 }
