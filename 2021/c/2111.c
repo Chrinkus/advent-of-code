@@ -76,7 +76,7 @@ int step_octos(int octos[][COLS])
 
 int main()
 {
-	aoc_banner_2021("11", "Dumbo Octapus");
+	aoc_banner_2021("11", "Dumbo Octopus");
 
 	int octos[ROWS][COLS];
 	for (int i = 0; i < ROWS; ++i)
