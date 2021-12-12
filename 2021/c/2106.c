@@ -46,7 +46,7 @@ int main()
 	aoc_banner_2021("06", "Lanternfish");
 
 	// Read input
-	struct Int_vector input;
+	Int_vector input;
 	sxc_vector_init(&input);
 	for (int n; scanf("%d", &n) == 1; getchar())
 		sxc_vector_push(&input, n);

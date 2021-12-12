@@ -86,7 +86,7 @@ int main()
 	aoc_banner_2021("04", "Giant Squid");
 
 	// Read balls
-	struct Int_vector balls;
+	Int_vector balls;
 	sxc_vector_init(&balls);
 	for (int n, c = ','; c != '\n' && scanf("%d", &n) == 1; c = getchar())
 		sxc_vector_push(&balls, n);

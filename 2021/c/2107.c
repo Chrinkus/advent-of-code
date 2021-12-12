@@ -15,7 +15,7 @@ int get_min(int* arr, int len)
 	return min;
 }
 
-void find_lowest_cost_positions(const struct Int_vector* v, int max,
+void find_lowest_cost_positions(const Int_vector* v, int max,
 		int* p1, int* p2)
 {
 	int* costs1 = calloc(max, sizeof(int));
@@ -39,7 +39,7 @@ int main()
 {
 	aoc_banner_2021("07", "The Treacheray of Whales");
 
-	struct Int_vector input;
+	Int_vector input;
 	sxc_vector_init(&input);
 
 	int max = 0;

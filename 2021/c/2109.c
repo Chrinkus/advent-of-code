@@ -72,7 +72,7 @@ int multiply_basins(struct Cave* cave)
 {
 	int ret = 1;
 
-	struct Int_vector basins;
+	Int_vector basins;
 	sxc_vector_init(&basins);
 
 	for (int i = 0; i < cave->rows; ++i) {
