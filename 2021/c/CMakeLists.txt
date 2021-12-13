@@ -27,6 +27,7 @@ set(solutions
 	"2109.c"
 	"2110.c"
 	"2111.c"
+	"2112.c"
 )
 
 # Build all the solutions
