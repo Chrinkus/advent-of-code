@@ -106,7 +106,7 @@ int main()
 	struct I64_vector auto_pts;
 	sxc_vector_init(&auto_pts);
 
-	String s;
+	struct sxc_string s;
 	sxc_string_init(&s);
 	for (int n; (n = sxc_getline(stdin, &s)) > 0; sxc_string_clear(&s)) {
 		char* const stack = malloc(n+1);

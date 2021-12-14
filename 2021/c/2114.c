@@ -64,7 +64,7 @@ void connect_rules(struct Reaction* r, void* data)
 	r->count = 0;
 }
 
-void set_initial_state(const String* poly, Reaction_vec* rv)
+void set_initial_state(const struct sxc_string* poly, Reaction_vec* rv)
 {
 	for (const char* p = sxc_string_str(poly); *(p+1); ++p) {
 		char pair[PAIRBUFF];
@@ -96,31 +96,31 @@ void react_polymer(Reaction_vec* rv)
 
 void count_chars(const struct Reaction* r, void* data)
 {
-	struct Charmap* cm = (struct Charmap*)data;
+	struct sxc_charmap* cm = (struct sxc_charmap*)data;
 
-	charmap_add(cm, r->pair[0], r->count);
-	charmap_add(cm, r->pair[1], r->count);
+	sxc_charmap_add(cm, r->pair[0], r->count);
+	sxc_charmap_add(cm, r->pair[1], r->count);
 }
 
 int64_t most_minus_least(const Reaction_vec* rv, char first, char last)
 {
-	struct Charmap cm;
-	charmap_init(&cm, SXC_ALPHA_UPPER);
+	struct sxc_charmap cm;
+	sxc_charmap_init(&cm, SXC_ALPHA_UPPER);
 	sxc_vector_foreach(rv, count_chars, &cm);
 
 	// Account for duplicates
 	for (size_t i = 0; i < cm.num_chars; ++i) {
-		struct Charcount* p = charmap_get_index(&cm, i);
+		struct sxc_charcount* p = sxc_charmap_get_index(&cm, i);
 		p->count /= 2;
 	}
-	charmap_inc(&cm, first);	// first not duplicated
-	charmap_inc(&cm, last);		// last not duplicated
-	charmap_sort(&cm);
+	sxc_charmap_inc(&cm, first);	// first not duplicated
+	sxc_charmap_inc(&cm, last);	// last not duplicated
+	sxc_charmap_sort(&cm);
 
-	int64_t most = charmap_sorted_most(&cm)->count;
-	int64_t least = charmap_sorted_least(&cm)->count;
+	int64_t most = sxc_charmap_sorted_most(&cm)->count;
+	int64_t least = sxc_charmap_sorted_least(&cm)->count;
 
-	charmap_free(&cm);
+	sxc_charmap_free(&cm);
 	return most - least;
 }
 
@@ -134,7 +134,7 @@ int main()
 {
 	aoc_banner_2021("14", "Extended Polymerization");
 
-	String polymer;
+	struct sxc_string polymer;
 	sxc_string_init(&polymer);
 	sxc_getline(stdin, &polymer);
 	const char first = sxc_string_head(&polymer);

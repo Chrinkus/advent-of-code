@@ -23,7 +23,7 @@ struct Report {
 
 struct Report* read_report(FILE* stream, struct Report* r)
 {
-	String s;
+	struct sxc_string s;
 	sxc_string_init(&s);
 	for (int n; (n = sxc_getline(stream, &s)) > 0; sxc_string_clear(&s)) {
 		sxc_vector_push(&r->data, strtol(sxc_string_str(&s), NULL, 2));

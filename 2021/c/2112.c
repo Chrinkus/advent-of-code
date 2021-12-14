@@ -41,7 +41,7 @@ int cave_find_cmp(const struct Cave* cave, const char* name)
 
 void read_connections(Con_read_vector* cons)
 {
-	String s;
+	struct sxc_string s;
 	sxc_string_init(&s);
 	for (int n, i; (n = sxc_getline(stdin, &s)) > 0; sxc_string_clear(&s)) {
 		struct Con_read* con;
