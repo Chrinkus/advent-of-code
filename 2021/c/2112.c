@@ -96,9 +96,9 @@ void connect_caves(const Con_read_vector* cons, const Cave_vector* caves)
 	for (size_t i = 0; i < sxc_vector_size(cons); ++i) {
 		const struct Con_read* p = sxc_vector_getp(cons, i);
 
-		struct Cave* a;
+		struct Cave* a = NULL;
 		sxc_vector_find(caves, p->a, cave_find_cmp, a);
-		struct Cave* b;
+		struct Cave* b = NULL;
 		sxc_vector_find(caves, p->b, cave_find_cmp, b);
 
 		struct Connection* q = malloc(sizeof(struct Connection));
@@ -147,7 +147,7 @@ int count_paths_1(const Cave_vector* caves)
 {
 	int ret = 0;
 
-	const struct Cave* src;
+	const struct Cave* src = NULL;
 	sxc_vector_find(caves, "start", cave_find_cmp, src);
 
 	find_end(src->next, &ret, 0U);
@@ -183,7 +183,7 @@ int count_paths_2(const Cave_vector* caves)
 {
 	int ret = 0;
 
-	const struct Cave* src;
+	const struct Cave* src = NULL;
 	sxc_vector_find(caves, "start", cave_find_cmp, src);
 
 	find_end_2(src->next, &ret, 0U, 0);
