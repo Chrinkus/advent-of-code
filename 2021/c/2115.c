@@ -98,6 +98,12 @@ struct sxc_vertex* sxc_graph_init(struct sxc_graph* g, struct sxc_grid* grid)
 	return g->graph;
 }
 
+void sxc_graph_free(struct sxc_graph* g)
+{
+	free(g->data);
+	free(g->graph);
+}
+
 int sxc_graph_get_adjacents(struct sxc_vertex* v, struct sxc_vertex* adj[],
 		const struct sxc_graph* g)
 {
@@ -108,7 +114,7 @@ int sxc_graph_get_adjacents(struct sxc_vertex* v, struct sxc_vertex* adj[],
 
 	if (i > 1 && i % xmax > 0)	adj[num_adj++] = v - 1;
 	if (i + 1 % xmax > 0)		adj[num_adj++] = v + 1;
-	if (i - xmax > 0)		adj[num_adj++] = v - xmax;
+	//if (i - xmax > 0)		adj[num_adj++] = v - xmax; // don't need
 	if (i + xmax < xmax * ymax)	adj[num_adj++] = v + xmax;
 
 	return num_adj;
@@ -154,6 +160,7 @@ int map_shortest_paths(struct sxc_graph* g)
 			}
 		}
 	}
+	sxc_vector_free(&queue);
 	return g->graph[g->size-1].d;
 }
 
@@ -223,10 +230,14 @@ int main()
 	if (!expand_data(big_data, 5, data))
 		return EXIT_FAILURE;
 
+	sxc_graph_free(&graph);
+
 	struct sxc_graph big_graph = { 0 };
 	if (!sxc_graph_init(&big_graph, big_data))
 		return EXIT_FAILURE;
 	int part2 = map_shortest_paths(&big_graph);
+
+	sxc_graph_free(&big_graph);
 
 	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
 	printf(TCINV "Part 2:" TCRINV " %d\n", part2);
