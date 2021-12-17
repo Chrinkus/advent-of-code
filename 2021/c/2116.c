@@ -19,6 +19,12 @@ enum constants {
 	LENGTH_TYPE_1 = 11,
 };
 
+enum comparison {
+	CMP_GT,
+	CMP_LT,
+	CMP_EQ,
+};
+
 struct packet;
 
 struct sub_packet {
@@ -36,6 +42,7 @@ struct packet {
 };
 
 uint64_t extract_len(uint64_t* bitbuff, int* numbits, int len, int64_t* count)
+	// count is for tracking mode '0' sub-packages
 {
 	uint64_t ret = 0;
 	int offset = *numbits - len;
@@ -98,8 +105,7 @@ uint64_t extract_literal(uint64_t* bitbuff, int* numbits, int64_t* count)
 	return lit;
 }
 
-struct packet* extract_packet(uint64_t* bitbuff, int* numbits, int* sum,
-		int64_t* count);
+struct packet* extract_packet(uint64_t*, int*, int*, int64_t*);
 struct sub_packet* extract_sub_packets(uint64_t* bitbuff, int* numbits,
 		int* sum, int64_t* count)
 {
@@ -115,7 +121,7 @@ struct sub_packet* extract_sub_packets(uint64_t* bitbuff, int* numbits,
 		get_bits(bitbuff, numbits);
 	int64_t len = extract_len(bitbuff, numbits, len_len, count);
 
-	struct sub_packet* list = NULL;//malloc(sizeof(struct sub_packet));
+	struct sub_packet* list = NULL;
 
 	if (mode == 0) {
 		while (!mode && *numbits < 8)	// load up on bits
@@ -180,6 +186,21 @@ int64_t maximum(int64_t a, int64_t b)
 	return a > b ? a : b;
 }
 
+int64_t evaluate_packet(const struct packet* packet);
+int64_t packet_compare(const struct sub_packet* p, enum comparison cmp)
+{
+	int64_t a = evaluate_packet(p->sub);
+	p = p->next;
+	int64_t b = evaluate_packet(p->sub);
+	
+	switch (cmp) {
+	case CMP_GT:	return a > b;
+	case CMP_LT:	return a < b;
+	case CMP_EQ:	return a == b;
+	}
+	return -1;
+}
+
 int64_t evaluate_packet(const struct packet* packet)
 {
 	int64_t res = 0;
@@ -219,35 +240,29 @@ int64_t evaluate_packet(const struct packet* packet)
 		res = packet->payload.literal;
 		break;
 	case 5:	// greater than
-		{
-			const struct sub_packet* p = packet->payload.subs;
-			int64_t a = evaluate_packet(p->sub);
-			p = p->next;
-			int64_t b = evaluate_packet(p->sub);
-			res = a > b;
-		}
+		res = packet_compare(packet->payload.subs, CMP_GT);
 		break;
 	case 6:	// less than
-		{
-			const struct sub_packet* p = packet->payload.subs;
-			int64_t a = evaluate_packet(p->sub);
-			p = p->next;
-			int64_t b = evaluate_packet(p->sub);
-			res = a < b;
-		}
+		res = packet_compare(packet->payload.subs, CMP_LT);
 		break;
 	case 7:	// equal to
-		{
-			const struct sub_packet* p = packet->payload.subs;
-			int64_t a = evaluate_packet(p->sub);
-			p = p->next;
-			int64_t b = evaluate_packet(p->sub);
-			res = a == b;
-		}
+		res = packet_compare(packet->payload.subs, CMP_EQ);
 		break;
 	}
 
 	return res;
+}
+
+void free_packet(struct packet* packet)
+{
+	if (packet->type_id != 4) {
+		for (struct sub_packet* p = packet->payload.subs, * q = p;
+				p; free(q), q = p) {
+			free_packet(p->sub);
+			p = p->next;
+		}
+	}
+	free(packet);
 }
 
 int main()
@@ -264,7 +279,7 @@ int main()
 	printf(TCINV "Part 1:" TCRINV " %d\n", part1);
 	printf(TCINV "Part 2:" TCRINV " %ld\n", part2);
 
-	free(p);	// can do better!
+	free_packet(p);
 
 	return EXIT_SUCCESS;
 }
