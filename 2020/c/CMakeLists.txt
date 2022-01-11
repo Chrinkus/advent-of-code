@@ -8,21 +8,19 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Hurt me more
 add_compile_options(-Wall -Wextra -Wpedantic -O2)
 
-# My external library
-set(LIBSXC_DIR "/home/$ENV{USER}/.local")
-
-include_directories("${LIBSXC_DIR}/include")
-link_directories("${LIBSXC_DIR}/lib")
+# GLib
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 
 # Selected solutions
 set(solutions
-	"2003.c"
+	"2001.c"
 )
 
 # Build all the solutions
 foreach(file IN LISTS solutions)
 	get_filename_component(exe_name "${file}" NAME_WE)
 	add_executable("${exe_name}" "${file}")
-	target_link_libraries("${exe_name}" sxc)
+	target_link_libraries("${exe_name}" PkgConfig::glib)
 endforeach()
 
