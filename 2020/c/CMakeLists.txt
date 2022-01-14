@@ -16,6 +16,7 @@ pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 set(solutions
 	"2001.c"
 	"2002.c"
+	"2003.c"
 )
 
 # Build all the solutions
