@@ -53,7 +53,7 @@ int main()
 	g_array_sort(input, int_cmp);
 
 	int part1 = two_sum(input, TARGET);
-	int part2 = 0;//three_sum(input, TARGET);
+	int part2 = three_sum(input, TARGET);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
