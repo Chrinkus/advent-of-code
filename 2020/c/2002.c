@@ -7,7 +7,9 @@ int main()
 
 	int part1 = 0;
 	int part2 = 0;
-	for (int lo, hi, ch; scanf("%d-%d %c: ", &lo, &hi, (char*)&ch) == 3; ) {
+
+	char ch = '\0';
+	for (int lo, hi; scanf("%d-%d %c: ", &lo, &hi, &ch) == 3; ) {
 		int count = 0;
 		int occur = 0;
 		for (int n = 1, c; (c = getchar()) != EOF && c != '\n'; ++n)
