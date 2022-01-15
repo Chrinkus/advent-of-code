@@ -10,7 +10,7 @@ add_compile_options(-Wall -Wextra -Wpedantic -O2)
 
 # GLib
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
 
 # Selected solutions
 set(solutions
@@ -23,6 +23,6 @@ set(solutions
 foreach(file IN LISTS solutions)
 	get_filename_component(exe_name "${file}" NAME_WE)
 	add_executable("${exe_name}" "${file}")
-	target_link_libraries("${exe_name}" PkgConfig::glib)
+	target_link_libraries("${exe_name}" PkgConfig::deps)
 endforeach()
 

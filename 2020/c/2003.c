@@ -1,10 +1,14 @@
 /*
  * GLib Usage Info
  *
+ * GString
+ * =======
  * This is my first use of the GString. The new, free and append functions
  * work as expected. Character access within the string is accomplished
  * directly on the stored memory by dereferencing the `str` member.
  *
+ * gint64
+ * ======
  * My output for part 2 was getting close to INT_MAX so I increased the size
  * of the integer type. Here the use of gint64 over int64_t seemed not to
  * provide much benefit.

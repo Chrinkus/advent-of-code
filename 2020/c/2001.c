@@ -1,3 +1,19 @@
+/*
+ * GLib Usage Info
+ *
+ * GArray
+ * ======
+ * GArray works well. It's easy to use, has intuitive functions and a few
+ * algorithms. The upfront ease of creation is a little offset by the
+ * accessor function being a macro that takes a type. There is also the
+ * warning that `g_array_append_val` cannot be passed a literal.
+ *
+ * Also there is no `size` function, we just directly access the `len` struct
+ * member.
+ *
+ * Valgrind reports un-freed memory even after the `unref` call. I've been
+ * assured this is okay and that glib has it's own valgrind suppression file.
+ */
 #include <stdlib.h>
 #include <stdio.h>
 
