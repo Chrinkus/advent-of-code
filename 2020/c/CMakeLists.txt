@@ -10,13 +10,18 @@ add_compile_options(-Wall -Wextra -Wpedantic -O2)
 
 # GLib
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET
+	glib-2.0
+	gio-2.0
+	gio-unix-2.0
+)
 
 # Selected solutions
 set(solutions
 	"2001.c"
 	"2002.c"
 	"2003.c"
+	"2004.c"
 )
 
 # Build all the solutions
