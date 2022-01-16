@@ -3,7 +3,8 @@
  *
  * g_strsplit
  * ==========
- * Definitely excited to use this functionality. Worked exactly as hoped!
+ * Definitely excited to use this functionality. Worked exactly as hoped! Free
+ * null-terminated vector with g_strfreev!
  *
  * GIO
  * ===
@@ -11,6 +12,13 @@
  * a LOT of extra work to use not including needing to separately include
  * and link unix-specific parts of the library. Will probably not use this
  * going forward.
+ *
+ * Misc Utils
+ * ==========
+ * - g_ascii_isxdigit, g_ascii_isdigit, g_ascii_strtoll, g_strcmp0
+ *   	- Not sure why these exist. Prefer standard library versions in future.
+ *   	- Only reason I could think of is if you can't use standard library
+ *   	- g_strcmp0 exists but no g_strlen so you need <string.h> anyways..
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,8 +29,8 @@
 #include <gio/gunixinputstream.h>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-// Constants and accessor
-enum fields {
+// Indexes, string labels and getters
+enum field_label_index {
 	BYR,		// Birth year
 	IYR,		// Issue year
 	EYR,		// Expiration year
@@ -31,10 +39,10 @@ enum fields {
 	ECL,		// Eye colour
 	PID,		// Passport ID
 	CID,		// Country ID (ignored)
-	NUM_FIELDS,
+	NUM_FIELD_LABELS,
 };
 
-const char* const field_labels[NUM_FIELDS] = {
+const char* const field_labels[NUM_FIELD_LABELS] = {
 	[BYR] = "byr", [IYR] = "iyr", [EYR] = "eyr", [HGT] = "hgt",
 	[HCL] = "hcl", [ECL] = "ecl", [PID] = "pid", [CID] = "cid",
 };
@@ -43,13 +51,13 @@ const unsigned REQUIRED_FIELDS = (1U << CID) - 1;
 
 int get_field(const char* s)
 {
-	for (int i = 0; i < NUM_FIELDS; ++i)
-		if (strcmp(field_labels[i], s) == 0)
+	for (int i = 0; i < NUM_FIELD_LABELS; ++i)
+		if (g_strcmp0(field_labels[i], s) == 0)
 			return i;
-	return NUM_FIELDS;
+	return NUM_FIELD_LABELS;
 }
 
-enum eye_colors { AMB, BLU, BRN, GRY, GRN, HZL, OTH, NUM_EYE_COLORS };
+enum eye_color_index { AMB, BLU, BRN, GRY, GRN, HZL, OTH, NUM_EYE_COLORS };
 
 const char* const eye_colors[NUM_EYE_COLORS] = {
 	[AMB] = "amb", [BLU] = "blu", [BRN] = "brn", [GRY] = "gry",
@@ -59,12 +67,12 @@ const char* const eye_colors[NUM_EYE_COLORS] = {
 int get_eye_color(const char* s)
 {
 	for (int i = 0; i < NUM_EYE_COLORS; ++i)
-		if (strcmp(eye_colors[i], s) == 0)
+		if (g_strcmp0(eye_colors[i], s) == 0)
 			return i;
 	return NUM_EYE_COLORS;
 }
 
-enum measurement_systems { MET, IMP, NUM_MEASUREMENT_SYSTEMS };
+enum measurement_system_index { MET, IMP, NUM_MEASUREMENT_SYSTEMS };
 
 const char* const measurement_systems[NUM_MEASUREMENT_SYSTEMS] = {
 	[MET] = "cm",
@@ -74,7 +82,7 @@ const char* const measurement_systems[NUM_MEASUREMENT_SYSTEMS] = {
 int get_measurement_system(const char* s)
 {
 	for (int i = 0; i < NUM_MEASUREMENT_SYSTEMS; ++i)
-		if (strcmp(measurement_systems[i], s) == 0)
+		if (g_strcmp0(measurement_systems[i], s) == 0)
 			return i;
 	return NUM_MEASUREMENT_SYSTEMS;
 }
@@ -118,7 +126,7 @@ const char* validate_height(const char* s)
 	case IMP:
 		return HGT_IMP_LO <= height && height <= HGT_IMP_HI ? s : NULL;
 	case NUM_MEASUREMENT_SYSTEMS:
-		// error message?
+		// break out and return NULL
 		break;
 	}
 	return NULL;
@@ -197,8 +205,9 @@ void process_passport(const char* data, struct Passport* pp)
 		case CID:
 			/* ignore */
 			break;
-		case NUM_FIELDS:
+		case NUM_FIELD_LABELS:
 			fprintf(stderr, "Unknown field: %s\n", line[0]);
+			break;
 		}
 		g_strfreev(line);
 	}
@@ -247,18 +256,18 @@ int main()
 	int part1 = 0;
 	int part2 = 0;
 
-	GString* pp_data = g_string_new(NULL);
-	while (read_passport_data(is, pp_data)) {
+	GString* data = g_string_new(NULL);
+	while (read_passport_data(is, data)) {
 		struct Passport pp = { 0 };
-		process_passport(pp_data->str, &pp);
+		process_passport(data->str, &pp);
 
 		if (has_required_fields(&pp)) {
 			++part1;
 			part2 += has_valid_fields(&pp);
 		}
-		g_string_truncate(pp_data, 0);
+		g_string_truncate(data, 0);
 	}
-	g_string_free(pp_data, TRUE);
+	g_string_free(data, TRUE);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
