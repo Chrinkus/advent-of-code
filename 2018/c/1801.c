@@ -10,16 +10,16 @@ int int_cmp(const void* a, const void* b)
 	return *(int*)a - *(int*)b;
 }
 
-int* check_repeat_freq(struct cgs_bst* freqs, int freq, int* found)
+int* check_repeat_freq(struct cgs_rbt* freqs, int freq, int* found)
 {
 	struct cgs_variant var = { 0 };
 	cgs_variant_set_int(&var, freq);
 
-	if (cgs_bst_search(freqs, &var)) {
+	if (cgs_rbt_search(freqs, &var)) {
 		*found = freq;
 		return found;
 	}
-	cgs_bst_insert(freqs, &var);
+	cgs_rbt_insert(freqs, &var);
 	return NULL;
 }
 
@@ -30,7 +30,7 @@ int main(void)
 	int part1 = 0;
 	int part2 = 0;
 
-	struct cgs_bst* freqs = cgs_bst_new(int_cmp);
+	struct cgs_rbt* freqs = cgs_rbt_new(int_cmp);
 
 	struct int_array shifts;
 	cgs_array_init(&shifts);
@@ -51,7 +51,7 @@ int main(void)
 	}
 getout:
 	cgs_array_free(&shifts);
-	cgs_bst_free(freqs);
+	cgs_rbt_free(freqs);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
