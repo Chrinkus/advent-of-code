@@ -5,11 +5,6 @@
 
 CGS_ARRAY_DEFINE_STRUCT(int_array, int);
 
-int int_cmp(const void* a, const void* b)
-{
-	return *(int*)a - *(int*)b;
-}
-
 int* check_repeat_freq(struct cgs_rbt* freqs, int freq, int* found)
 {
 	struct cgs_variant var = { 0 };
@@ -30,7 +25,7 @@ int main(void)
 	int part1 = 0;
 	int part2 = 0;
 
-	struct cgs_rbt* freqs = cgs_rbt_new(int_cmp);
+	struct cgs_rbt* freqs = cgs_rbt_new(cgs_int_cmp);
 
 	struct int_array shifts;
 	cgs_array_init(&shifts);
