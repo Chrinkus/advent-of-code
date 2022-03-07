@@ -3,8 +3,6 @@
 
 #include <cgs/cgs.h>
 
-CGS_ARRAY_DEFINE_STRUCT(int_array, int);
-
 int* check_repeat_freq(struct cgs_rbt* freqs, int freq, int* found)
 {
 	struct cgs_variant var = { 0 };
@@ -26,26 +24,34 @@ int main(void)
 	int part2 = 0;
 
 	struct cgs_rbt* freqs = cgs_rbt_new(cgs_int_cmp);
-
-	struct int_array shifts;
-	cgs_array_init(&shifts);
+	struct cgs_array* shifts = cgs_array_new(int);
 
 	for (int n; scanf(" %d", &n) == 1; ) {
-		cgs_array_push(&shifts, n);
+		cgs_array_push(shifts, &n);
 		part1 += n;
 		if (!part2)
 			check_repeat_freq(freqs, part1, &part2);
 	}
 
+	size_t len;
+	int* ai = cgs_array_xfer(shifts, &len);
+	for (int i = 0, freq = part1; 1; i = (i+1) % len) {
+		freq += ai[i];
+		if (check_repeat_freq(freqs, freq, &part2))
+			goto getout;
+	}
+	/*
 	for (int freq = part1; 1; ) {
-		for (size_t i = 0; i < shifts.len; ++i) {
-			freq += cgs_array_get(&shifts, i);
+		for (size_t i = 0; i < cgs_array_length(shifts); ++i) {
+			freq += *(int*)cgs_array_get(shifts, i);
 			if (check_repeat_freq(freqs, freq, &part2))
 				goto getout;
 		}
 	}
+	*/
 getout:
-	cgs_array_free(&shifts);
+	free(ai);
+	//cgs_array_free(shifts);
 	cgs_rbt_free(freqs);
 
 	printf("Part 1: %d\n", part1);

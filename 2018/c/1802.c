@@ -2,12 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-enum { MAXBUFF = 32 };
-
-int char_cmp(const void* a, const void* b)
-{
-	return *(char*)a - *(char*)b;
-}
+#include <cgs/cgs.h>
 
 void count_repeats(const char* s, int* twice, int* thrice)
 {
@@ -35,10 +30,13 @@ int main(void)
 
 	int twice = 0;
 	int thrice = 0;
-	for (char line[MAXBUFF]; fgets(line, MAXBUFF, stdin); ) {
-		qsort(line, strlen(line), sizeof(char), char_cmp);
-		count_repeats(line, &twice, &thrice);
+
+	struct cgs_string* buff = cgs_string_new();
+	for ( ; cgs_io_getline(stdin, buff) > 0; cgs_string_clear(buff)) {
+		cgs_string_sort(buff);
+		count_repeats(cgs_string_read(buff), &twice, &thrice);
 	}
+	cgs_string_free(buff);
 
 	int part1 = twice * thrice;
 	int part2 = 0;
