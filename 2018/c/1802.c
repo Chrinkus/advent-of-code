@@ -86,7 +86,7 @@ int main(void)
 	printf("Part 2: %s\n", part2);
 
 	free(part2);
-	cgs_array_free(ids);
+	cgs_array_free_all(ids);
 
 	return EXIT_SUCCESS;
 }
