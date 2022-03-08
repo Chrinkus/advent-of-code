@@ -40,18 +40,8 @@ int main(void)
 		if (check_repeat_freq(freqs, freq, &part2))
 			goto getout;
 	}
-	/*
-	for (int freq = part1; 1; ) {
-		for (size_t i = 0; i < cgs_array_length(shifts); ++i) {
-			freq += *(int*)cgs_array_get(shifts, i);
-			if (check_repeat_freq(freqs, freq, &part2))
-				goto getout;
-		}
-	}
-	*/
 getout:
 	free(ai);
-	//cgs_array_free(shifts);
 	cgs_rbt_free(freqs);
 
 	printf("Part 1: %d\n", part1);

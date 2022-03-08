@@ -17,18 +17,46 @@ void count_repeats(const char* s, int* twice, int* thrice)
 			trips += !trips && count == 3;
 			count = 1;
 		}
-		if (!*s)
+		if (!*s)	// test here to catch last count
 			break;
 	}
 	*twice += dubbs;
 	*thrice += trips;
 }
 
-const char* find_common_ids(struct cgs_array* ids)
+int count_mismatches(const char* a, const char* b, int limit)
 {
+	int count = 0;
+	for (size_t i = 0, l = strlen(a); i < l && count < limit; ++i)
+		count += a[i] != b[i];
+	return count;
+}
+
+char* common_chars(const char* a, const char* b)
+{
+	char* s = malloc(strlen(a) + 1);
+	char* p = s;
+	for ( ; *a; ++a, ++b)
+		if (*a == *b)
+			*p++ = *a;
+	*p = '\0';
+	return s;
+}
+
+char* find_common_ids(struct cgs_array* ids)
+{
+	char* ret = NULL;
+
 	cgs_array_sort(ids, cgs_str_cmp);
 
-	return "";
+	CgsStrIter b = cgs_array_begin(ids);
+	CgsStrIter e = cgs_array_end(ids);
+	for (CgsStrIter next = b + 1; next != e; ++b, ++next)
+		if (count_mismatches(*b, *next, 2) == 1) {
+			ret = common_chars(*b, *next);
+			break;
+		}
+	return ret;
 }
 
 int main(void)
@@ -52,12 +80,12 @@ int main(void)
 	cgs_string_free(buff);
 
 	int part1 = twice * thrice;
-
-	const char* part2 = find_common_ids(ids);
+	char* part2 = find_common_ids(ids);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %s\n", part2);
 
+	free(part2);
 	cgs_array_free(ids);
 
 	return EXIT_SUCCESS;
