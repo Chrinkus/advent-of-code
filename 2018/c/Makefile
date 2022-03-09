@@ -8,9 +8,13 @@ LDFLAGS = -Wl,-rpath=/usr/local/lib -lcgs
 BINDIR = $${PWD}/build
 
 all: \
+	$(BINDIR)/1804	\
 	$(BINDIR)/1803	\
 	$(BINDIR)/1802	\
 	$(BINDIR)/1801
+
+$(BINDIR)/1804: 1804.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $< $(LDFLAGS)
 
 $(BINDIR)/1803: 1803.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $< $(LDFLAGS)
@@ -22,6 +26,7 @@ $(BINDIR)/1801: 1801.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
+	-rm $(BINDIR)/1804
 	-rm $(BINDIR)/1803
 	-rm $(BINDIR)/1802
 	-rm $(BINDIR)/1801
