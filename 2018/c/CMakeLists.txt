@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_compile_options(-Wall -Wextra -Werror)
 
 find_package(cgs REQUIRED)
+find_package(fruity REQUIRED)
 
 set(solutions
 	"1801.c"
@@ -15,11 +16,12 @@ set(solutions
 	"1803.c"
 	"1804.c"
 	"1805.c"
+	"1806.c"
 )
 
 foreach(file IN LISTS solutions)
 	get_filename_component(exe_name "${file}" NAME_WE)
 	add_executable("${exe_name}" "${file}")
-	target_link_libraries("${exe_name}" cgs)
+	target_link_libraries("${exe_name}" cgs fruity)
 endforeach()
 
