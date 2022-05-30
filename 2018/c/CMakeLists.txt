@@ -5,10 +5,15 @@ project(aoc-2018 VERSION 0.1 LANGUAGES C)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Wextra -Werror)
+add_compile_options(-Wall -Wextra)
 
 find_package(cgs REQUIRED)
 find_package(fruity REQUIRED)
+
+if(APPLE)
+        include_directories(${CMAKE_INSTALL_PREFIX}/include)
+        link_directories(${CMAKE_INSTALL_PREFIX}/lib)
+endif()
 
 set(solutions
 	"1801.c"
