@@ -157,7 +157,7 @@ const void* queue_adjacents(struct cgs_heap* q, struct claim* c,
         // Need coords array to set edges
         // Need grid to get adjacents from
 {
-        Fruity2DCell adj[4] = { 0 };
+        Fruity2DCell adj[4] = { { 0 } };
         int n = fruity_adjacent_4(g, c->pt.y, c->pt.x, adj);
 
         if (n < 4)

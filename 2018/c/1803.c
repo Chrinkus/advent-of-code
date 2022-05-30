@@ -28,7 +28,7 @@ int find_solo_claim(const struct cgs_array* claims, const int fab[][MAX_SIDE])
 					goto next_claim;
 		return p->id;
 next_claim:
-                continue;       // needed for clang(?)
+                continue;
 	}
 	return -1;
 }
