@@ -9,7 +9,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Constants
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-enum territory_id { ID_NEUTRAL = -1, ID_START = 0, };
+enum { ID_NEUTRAL = -1, ID_START = 0, SAFE_REGION_SIZE = 10000 };
 
 const char* id_symbols = " !@#$%^&*()<>{}[];,~-=+'|?"
                          "abcdefghijklmnopqrstuvwxyz"
@@ -21,7 +21,6 @@ const char* id_symbols = " !@#$%^&*()<>{}[];,~-=+'|?"
 struct location {
 	int id;
 	int distance;
-        int soa_dist;           // sum of all distances (Part 2)
 };
 
 struct point {
@@ -103,27 +102,6 @@ void* read_input(struct input* pi)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Grid operations
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-int get_sum_of_distances(int r, int c, const struct cgs_array* a)
-{
-        int sum = 0;
-        for (int i = 0; i < cgs_array_length(a); ++i) {
-                const struct coord* p = cgs_array_get(a, i);
-                sum += abs(r - p->pt.y) + abs(c - p->pt.x);
-        }
-
-        return sum;
-}
-
-void init_location(Fruity2DCell cell, void* data)
-{
-        struct location* pl = cell.ptr;
-        const struct cgs_array* coords = data;
-
-        pl->id = ID_NEUTRAL;
-        pl->distance = INT_MAX;
-        pl->soa_dist = get_sum_of_distances(cell.row, cell.col, coords);
-}
-
 void* init_grid(Fruity2D* grid, const struct input* input)
 {
         void* res = fruity_new(grid, input->rows, input->cols,
@@ -131,7 +109,8 @@ void* init_grid(Fruity2D* grid, const struct input* input)
         if (!res)
                 return NULL;
 
-        fruity_transform(grid, NULL, NULL, init_location, input->coords);
+        struct location init = { .id = ID_NEUTRAL, .distance = INT_MAX };
+        fruity_init(grid, &init);
 
         return res;
 }
@@ -150,12 +129,8 @@ const void* load_queue(struct cgs_heap* q, const struct cgs_array* a)
         return e;
 }
 
-const void* queue_adjacents(struct cgs_heap* q, struct claim* c,
+const void* queue_adjacents_and_mark_edges(struct cgs_heap* q, struct claim* c,
                 struct cgs_array* a, Fruity2D* g)
-        // Need queue to push onto
-        // Need claim to identify adjacents and queue
-        // Need coords array to set edges
-        // Need grid to get adjacents from
 {
         Fruity2DCell adj[4] = { { 0 } };
         int n = fruity_adjacent_4(g, c->pt.y, c->pt.x, adj);
@@ -199,7 +174,7 @@ void* mark_territories(Fruity2D* g, struct cgs_array* coords)
                         p->id = c.id;
                 }
 
-                if (!queue_adjacents(&pq, &c, coords, g))
+                if (!queue_adjacents_and_mark_edges(&pq, &c, coords, g))
                         goto error_cleanup;
         }
         cgs_heap_free(&pq);
@@ -244,17 +219,19 @@ int get_largest_area(struct cgs_array* coords, const Fruity2D* g)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Get output for Part 2
+ * Part 2 predicate
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-int get_safe_region_size(const Fruity2D* g, int safe)
+int is_safe(Fruity2DCell cell, void* data)
 {
+        const struct cgs_array* a = data;
+
         int sum = 0;
-        for (int i = 0; i < g->rows; ++i)
-                for (int j = 0; j < g->cols; ++j) {
-                        const struct location* pl = fruity_get(g, i, j);
-                        sum += pl->soa_dist < safe;
-                }
-        return sum;
+        for (size_t i = 0; i < cgs_array_length(a); ++i) {
+                const struct coord* pc = cgs_array_get(a, i);
+                sum += abs(cell.row - pc->pt.y) + abs(cell.col - pc->pt.x);
+        }
+
+        return sum < SAFE_REGION_SIZE;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -295,7 +272,7 @@ int main(void)
         print_grid(&grid);
 
 	int part1 = get_largest_area(input.coords, &grid);
-	int part2 = get_safe_region_size(&grid, 10000);
+        int part2 = fruity_count_if(&grid, is_safe, input.coords);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
