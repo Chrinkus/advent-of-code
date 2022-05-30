@@ -19,8 +19,8 @@ const char* id_symbols = " !@#$%^&*()<>{}[];,~-=+'|?"
  * Data structures
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 struct location {
-	int id;
-	int distance;
+        int id;
+        int distance;
 };
 
 struct point {
@@ -49,7 +49,7 @@ struct coord {
 };
 
 struct input {
-	struct cgs_array* coords;
+        struct cgs_array* coords;
         int rows;
         int cols;
 };
@@ -74,22 +74,22 @@ void apply_offsets(void* p, size_t i, void* data)
 
 void* read_input(struct input* pi)
 {
-	struct cgs_array* coords = cgs_array_new(struct coord);
+        struct cgs_array* coords = cgs_array_new(struct coord);
         if (!coords)
                 return NULL;
 
         int id = ID_START;
-	struct point mins = { .x = INT_MAX, .y = INT_MAX };
-	struct point maxs = { 0 };
-	for (struct point pt; scanf("%d, %d", &pt.x, &pt.y) == 2; ++id) {
+        struct point mins = { .x = INT_MAX, .y = INT_MAX };
+        struct point maxs = { 0 };
+        for (struct point pt; scanf("%d, %d", &pt.x, &pt.y) == 2; ++id) {
                 struct coord c = { .pt = pt, .id = id };
-		if (!cgs_array_push(coords, &c))
+                if (!cgs_array_push(coords, &c))
                         return NULL;
-		mins.x = CGS_MIN(mins.x, pt.x);
-		mins.y = CGS_MIN(mins.y, pt.y);
-		maxs.x = CGS_MAX(maxs.x, pt.x);
-		maxs.y = CGS_MAX(maxs.y, pt.y);
-	}
+                mins.x = CGS_MIN(mins.x, pt.x);
+                mins.y = CGS_MIN(mins.y, pt.y);
+                maxs.x = CGS_MAX(maxs.x, pt.x);
+                maxs.y = CGS_MAX(maxs.y, pt.y);
+        }
 
         cgs_array_transform(coords, apply_offsets, &mins);
         pi->coords = coords;
@@ -256,7 +256,7 @@ void print_grid(const Fruity2D* g)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
-	printf("Advent of Code 2018 Day 6: Chronal Coordinates\n");
+        printf("Advent of Code 2018 Day 6: Chronal Coordinates\n");
 
         struct input input = { 0 };
         if (!read_input(&input))
@@ -271,15 +271,15 @@ int main(void)
 
         print_grid(&grid);
 
-	int part1 = get_largest_area(input.coords, &grid);
+        int part1 = get_largest_area(input.coords, &grid);
         int part2 = fruity_count_if(&grid, is_safe, input.coords);
 
-	printf("Part 1: %d\n", part1);
-	printf("Part 2: %d\n", part2);
+        printf("Part 1: %d\n", part1);
+        printf("Part 2: %d\n", part2);
 
-	fruity_free(&grid);
-	free_input(&input);
+        fruity_free(&grid);
+        free_input(&input);
 
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
 }
 
