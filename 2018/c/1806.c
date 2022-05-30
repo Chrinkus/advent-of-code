@@ -72,7 +72,7 @@ void apply_offsets(void* p, size_t i, void* data)
         c->pt.y -= offsets->y;
 }
 
-void* read_input(struct input* pi)
+void* read_input(struct input* input)
 {
         struct cgs_array* coords = cgs_array_new(struct coord);
         if (!coords)
@@ -84,7 +84,7 @@ void* read_input(struct input* pi)
         for (struct point pt; scanf("%d, %d", &pt.x, &pt.y) == 2; ++id) {
                 struct coord c = { .pt = pt, .id = id };
                 if (!cgs_array_push(coords, &c))
-                        return NULL;
+                        goto error_cleanup;
                 mins.x = CGS_MIN(mins.x, pt.x);
                 mins.y = CGS_MIN(mins.y, pt.y);
                 maxs.x = CGS_MAX(maxs.x, pt.x);
@@ -92,11 +92,15 @@ void* read_input(struct input* pi)
         }
 
         cgs_array_transform(coords, apply_offsets, &mins);
-        pi->coords = coords;
-        pi->rows = maxs.y - mins.y + 1;
-        pi->cols = maxs.x - mins.x + 1;
+        input->coords = coords;
+        input->rows = maxs.y - mins.y + 1;
+        input->cols = maxs.x - mins.x + 1;
 
-        return coords;
+        return input;
+
+error_cleanup:
+        cgs_array_free(coords);
+        return NULL;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
