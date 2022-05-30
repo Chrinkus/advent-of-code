@@ -6,30 +6,23 @@
 #include <fruity.h>
 #include <fruity_io.h>
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 enum territory_id { ID_NEUTRAL = -1, ID_START = 0, };
 
-const char* id_symbols = " !@#$%^&*()=+0123456789"
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                         "abcdefghijklmnopqrstuvwxyz";
+const char* id_symbols = " !@#$%^&*()<>{}[];,~-=+'|?"
+                         "abcdefghijklmnopqrstuvwxyz"
+                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Data structures
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 struct location {
 	int id;
 	int distance;
+        int soa_dist;           // sum of all distances (Part 2)
 };
-
-void print_id(const void* element, void* data)
-{
-        const char* pk = id_symbols + 1;        // 'space' is neutral (-1)
-        const struct location* p = element;
-        (void)data;
-
-        printf("%c", pk[p->id]);
-}
-
-void print_grid(const Fruity2D* g)
-{
-        fruity_foreach(g, fruity_io_newline, NULL, print_id, NULL);
-}
 
 struct point {
         int x, y;
@@ -67,6 +60,9 @@ void free_input(struct input* input)
         cgs_array_free(input->coords);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Reading input
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void apply_offsets(void* p, size_t i, void* data)
 {
         struct coord* c = p;
@@ -78,8 +74,6 @@ void apply_offsets(void* p, size_t i, void* data)
 }
 
 void* read_input(struct input* pi)
-        // Read the coordinates from input, identify min and max pts
-        // Offset all coordinates by mins
 {
 	struct cgs_array* coords = cgs_array_new(struct coord);
         if (!coords)
@@ -106,14 +100,38 @@ void* read_input(struct input* pi)
         return coords;
 }
 
-void* init_grid(Fruity2D* grid, int rows, int cols)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Grid operations
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+int get_sum_of_distances(int r, int c, const struct cgs_array* a)
 {
-        void* res = fruity_new(grid, rows, cols, sizeof(struct location));
+        int sum = 0;
+        for (int i = 0; i < cgs_array_length(a); ++i) {
+                const struct coord* p = cgs_array_get(a, i);
+                sum += abs(r - p->pt.y) + abs(c - p->pt.x);
+        }
+
+        return sum;
+}
+
+void init_location(Fruity2DCell cell, void* data)
+{
+        struct location* pl = cell.ptr;
+        const struct cgs_array* coords = data;
+
+        pl->id = ID_NEUTRAL;
+        pl->distance = INT_MAX;
+        pl->soa_dist = get_sum_of_distances(cell.row, cell.col, coords);
+}
+
+void* init_grid(Fruity2D* grid, const struct input* input)
+{
+        void* res = fruity_new(grid, input->rows, input->cols,
+                        sizeof(struct location));
         if (!res)
                 return NULL;
 
-        struct location init = { .id = ID_NEUTRAL, .distance = INT_MAX };
-        fruity_init(grid, &init);
+        fruity_transform(grid, NULL, NULL, init_location, input->coords);
 
         return res;
 }
@@ -192,17 +210,21 @@ error_cleanup:
         return NULL;
 }
 
-void increment_area(const void* element, void* data)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Get output for Part 1
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+void increment_area(Fruity2DCell cell, void* data)
 {
-        const struct location* pl = element;
+        const struct location* pl = cell.ptr;
         struct coord* pc = data;
 
         if (pl->id != ID_NEUTRAL)
                 ++pc[pl->id].area;
 }
 
-void find_max_inner_area(const void* element, size_t, void* data)
+void find_max_inner_area(const void* element, size_t i, void* data)
 {
+        (void)i;
         const struct coord* pc = element;
         int* pmax = data;
 
@@ -221,6 +243,40 @@ int get_largest_area(struct cgs_array* coords, const Fruity2D* g)
         return max;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Get output for Part 2
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+int get_safe_region_size(const Fruity2D* g, int safe)
+{
+        int sum = 0;
+        for (int i = 0; i < g->rows; ++i)
+                for (int j = 0; j < g->cols; ++j) {
+                        const struct location* pl = fruity_get(g, i, j);
+                        sum += pl->soa_dist < safe;
+                }
+        return sum;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Print grid to visualize data
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+void print_id(Fruity2DCell cell, void* data)
+{
+        const char* id_key = id_symbols + 1;
+        const struct location* p = cell.ptr;
+        (void)data;
+
+        printf("%c", id_key[p->id]);
+}
+
+void print_grid(const Fruity2D* g)
+{
+        fruity_foreach(g, fruity_io_newline, NULL, print_id, NULL);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
 	printf("Advent of Code 2018 Day 6: Chronal Coordinates\n");
@@ -230,7 +286,7 @@ int main(void)
                 return EXIT_FAILURE;
 
         Fruity2D grid = { 0 };
-        if (!init_grid(&grid, input.rows, input.cols))
+        if (!init_grid(&grid, &input))
                 return EXIT_FAILURE;
 
         if (!mark_territories(&grid, input.coords))
@@ -239,7 +295,7 @@ int main(void)
         print_grid(&grid);
 
 	int part1 = get_largest_area(input.coords, &grid);
-	int part2 = 0;
+	int part2 = get_safe_region_size(&grid, 10000);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
