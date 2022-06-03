@@ -5,10 +5,39 @@ project(aoc-2018 VERSION 0.1 LANGUAGES C)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Wextra)
-
+# Libraries
 find_package(cgs REQUIRED)
 find_package(fruity REQUIRED)
+
+# Protections against different generator types behaving differently
+# Boilerplate-y from Professional CMake Section 14.3
+get_property(isMultiConfig GLOBAL
+        PROPERTY GENERATOR_IS_MULTI_CONFIG
+)
+if (isMultiConfig)
+        if (NOT "Profile" IN_LIST CMAKE_CONFIGURATION_TYPES)
+                list(APPEND CMAKE_CONFIGURATION_TYPES Profile)
+        endif()
+else()
+        set(allowedBuildTypes Debug Release Profile)
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
+                STRINGS "${allowedBuildTypes}"
+        )
+        if (NOT CMAKE_BUILD_TYPE)
+                set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+        elseif(NOT CMAKE_BUILD_TYPE IN_LIST allowedBuildTypes)
+                message(FATAL_ERROR
+                        "Unknown build type: ${CMAKE_BUILD_TYPE}"
+                )
+        endif()
+endif()
+
+# Profile build settings
+set(CMAKE_C_FLAGS_PROFILE               "-pg -g -O2" CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_PROFILE      "-pg" CACHE STRING "" FORCE)
+
+# General compilation flags
+add_compile_options(-Wall -Wextra -Werror)
 
 if(APPLE)
         include_directories(${CMAKE_INSTALL_PREFIX}/include)
