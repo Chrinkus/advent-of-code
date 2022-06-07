@@ -58,40 +58,40 @@ int get_checksum(struct cgs_array* ids)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int count_mismatches(const char* a, const char* b, int limit)
 {
-	int count = 0;
-	for (size_t i = 0, l = strlen(a); i < l && count < limit; ++i)
-		count += a[i] != b[i];
-	return count;
+        int count = 0;
+        for (size_t i = 0, l = strlen(a); i < l && count < limit; ++i)
+                count += a[i] != b[i];
+        return count;
 }
 
 char* common_chars(const char* a, const char* b)
 {
-	char* s = malloc(strlen(a) + 1);
+        char* s = malloc(strlen(a) + 1);
         if (!s)
                 return NULL;
 
-	char* p = s;
-	for ( ; *a; ++a, ++b)
-		if (*a == *b)
-			*p++ = *a;
-	*p = '\0';
-	return s;
+        char* p = s;
+        for ( ; *a; ++a, ++b)
+                if (*a == *b)
+                        *p++ = *a;
+        *p = '\0';
+        return s;
 }
 
 char* find_common_ids(struct cgs_array* ids)
 {
-	char* ret = NULL;
+        char* ret = NULL;
 
-	cgs_array_sort(ids, cgs_str_cmp);
+        cgs_array_sort(ids, cgs_str_cmp);
 
-	CgsStrIter b = cgs_array_begin(ids);
-	CgsStrIter e = cgs_array_end(ids);
-	for (CgsStrIter next = b + 1; next != e; ++b, ++next)
-		if (count_mismatches(*b, *next, 2) == 1) {
-			ret = common_chars(*b, *next);
-			break;
-		}
-	return ret;
+        CgsStrIter b = cgs_array_begin(ids);
+        CgsStrIter e = cgs_array_end(ids);
+        for (CgsStrIter next = b + 1; next != e; ++b, ++next)
+                if (count_mismatches(*b, *next, 2) == 1) {
+                        ret = common_chars(*b, *next);
+                        break;
+                }
+        return ret;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -99,7 +99,7 @@ char* find_common_ids(struct cgs_array* ids)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
-	printf("Advent of Code 2018 Day 2: Inventory Management System\n");
+        printf("Advent of Code 2018 Day 2: Inventory Management System\n");
 
         struct cgs_array input = { 0 };
         if (!cgs_array_new(&input, sizeof(char*)))
@@ -114,12 +114,12 @@ int main(void)
 
         int part1 = get_checksum(&input);
 
-	printf("Part 1: %d\n", part1);
-	printf("Part 2: %s\n", part2);
+        printf("Part 1: %d\n", part1);
+        printf("Part 2: %s\n", part2);
 
-	free(part2);
-	cgs_array_free_all(&input);
+        free(part2);
+        cgs_array_free_all(&input);
 
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
 }
 
