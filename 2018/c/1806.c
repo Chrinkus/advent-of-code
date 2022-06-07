@@ -49,14 +49,14 @@ struct coord {
 };
 
 struct input {
-        struct cgs_array* coords;
+        struct cgs_array coords;
         int rows;
         int cols;
 };
 
 void free_input(struct input* input)
 {
-        cgs_array_free(input->coords);
+        cgs_array_free(&input->coords);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -74,8 +74,8 @@ void apply_offsets(void* p, size_t i, void* data)
 
 void* read_input(struct input* input)
 {
-        struct cgs_array* coords = cgs_array_new(struct coord);
-        if (!coords)
+        struct cgs_array* coords = &input->coords;
+        if (!cgs_array_new(coords, sizeof(struct coord)))
                 return NULL;
 
         int id = ID_START;
@@ -92,7 +92,6 @@ void* read_input(struct input* input)
         }
 
         cgs_array_transform(coords, apply_offsets, &mins);
-        input->coords = coords;
         input->rows = maxs.y - mins.y + 1;
         input->cols = maxs.x - mins.x + 1;
 
@@ -270,13 +269,13 @@ int main(void)
         if (!init_grid(&grid, &input))
                 return EXIT_FAILURE;
 
-        if (!mark_territories(&grid, input.coords))
+        if (!mark_territories(&grid, &input.coords))
                 return EXIT_FAILURE;
 
-        print_grid(&grid);
+        //print_grid(&grid);
 
-        int part1 = get_largest_area(input.coords, &grid);
-        int part2 = fruity_count_if(&grid, is_safe, input.coords);
+        int part1 = get_largest_area(&input.coords, &grid);
+        int part2 = fruity_count_if(&grid, is_safe, &input.coords);
 
         printf("Part 1: %d\n", part1);
         printf("Part 2: %d\n", part2);
