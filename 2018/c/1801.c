@@ -57,7 +57,7 @@ void* run_shifts(const struct cgs_array* input, int* p1, int* p2)
 
 int main(void)
 {
-	printf("Advent of Code 2018 Day 1: Chronal Calibration\n");
+        printf("Advent of Code 2018 Day 1: Chronal Calibration\n");
 
         struct cgs_array input = { 0 };
         if (!cgs_array_new(&input, sizeof(int)))
@@ -66,16 +66,16 @@ int main(void)
         if (!read_input(&input))
                 return EXIT_FAILURE;
 
-	int part1 = 0;
-	int part2 = 0;
+        int part1 = 0;
+        int part2 = 0;
         if (!run_shifts(&input, &part1, &part2))
                 return EXIT_FAILURE;
 
-	printf("Part 1: %d\n", part1);
-	printf("Part 2: %d\n", part2);
+        printf("Part 1: %d\n", part1);
+        printf("Part 2: %d\n", part2);
 
         cgs_array_free(&input);
 
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
 }
 
