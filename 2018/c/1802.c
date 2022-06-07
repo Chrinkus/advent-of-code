@@ -4,26 +4,58 @@
 
 #include <cgs/cgs.h>
 
-void count_repeats(const char* s, int* twice, int* thrice)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Data Structure
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+struct repeat_count {
+        int pairs;
+        int trios;
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 1 - Count ids with double and triple character occurrances
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+void count_repeats(char* s, struct repeat_count* rc)
 {
-	int dubbs = 0;
-	int trips = 0;
-	int count = 1;
-	for (char c = '\0'; !dubbs || !trips; c = *s++) {
-		if (*s == c) {
-			++count;
-		} else {
-			dubbs += !dubbs && count == 2;
-			trips += !trips && count == 3;
-			count = 1;
-		}
-		if (!*s)	// test here to catch last count
-			break;
-	}
-	*twice += dubbs;
-	*thrice += trips;
+        qsort(s, strlen(s), sizeof(char), cgs_char_cmp);
+
+        int dubbs = 0;
+        int trips = 0;
+        for (int c = '\0', count = 1; !dubbs || !trips; c = *s++) {
+                if (*s == c) {
+                        ++count;
+                } else {
+                        dubbs += !dubbs && count == 2;
+                        trips += !trips && count == 3;
+                        count = 1;
+                }
+                if (!*s)        // test here to catch last count
+                        break;
+        }
+        rc->pairs += dubbs;
+        rc->trios += trips;
 }
 
+void setup_counter(void* element, size_t i, void* data)
+{
+        char* s = *(char**)element;
+        struct repeat_count* rc = data;
+        (void)i;
+        count_repeats(s, rc);
+}
+
+int get_checksum(struct cgs_array* ids)
+{
+        struct repeat_count rc = { 0 };
+
+        cgs_array_transform(ids, setup_counter, &rc);
+
+        return rc.pairs * rc.trios;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 2 - Get common characters of 2 ids that differ by 1 character
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int count_mismatches(const char* a, const char* b, int limit)
 {
 	int count = 0;
@@ -35,6 +67,9 @@ int count_mismatches(const char* a, const char* b, int limit)
 char* common_chars(const char* a, const char* b)
 {
 	char* s = malloc(strlen(a) + 1);
+        if (!s)
+                return NULL;
+
 	char* p = s;
 	for ( ; *a; ++a, ++b)
 		if (*a == *b)
@@ -59,34 +94,31 @@ char* find_common_ids(struct cgs_array* ids)
 	return ret;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
 	printf("Advent of Code 2018 Day 2: Inventory Management System\n");
 
-	int twice = 0;
-	int thrice = 0;
+        struct cgs_array input = { 0 };
+        if (!cgs_array_new(&input, sizeof(char*)))
+                return EXIT_FAILURE;
 
-	struct cgs_array* ids = cgs_array_new(char*);
-	struct cgs_string* buff = cgs_string_new();
-	for ( ; cgs_io_getline(stdin, buff) > 0; cgs_string_clear(buff)) {
-		// Part 2
-		char* p = cgs_strdup(cgs_string_read(buff));
-		cgs_array_push(ids, &p);
+        if (!cgs_io_readlines(stdin, &input))
+                return EXIT_FAILURE;
 
-		// Part 1
-		cgs_string_sort(buff);
-		count_repeats(cgs_string_read(buff), &twice, &thrice);
-	}
-	cgs_string_free(buff);
+        char* part2 = find_common_ids(&input);
+        if (!part2)
+                return EXIT_FAILURE;
 
-	int part1 = twice * thrice;
-	char* part2 = find_common_ids(ids);
+        int part1 = get_checksum(&input);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %s\n", part2);
 
 	free(part2);
-	cgs_array_free_all(ids);
+	cgs_array_free_all(&input);
 
 	return EXIT_SUCCESS;
 }
