@@ -10,9 +10,12 @@ struct guard {
 	int minutes[NUM_MINUTES];
 };
 
-int guard_cmp(const void* a, const void* b)
+int guard_pred(const void* a, const void* b)
 {
-	return ((const struct guard*)a)->id - ((const struct guard*)b)->id;
+        const struct guard* g1 = a;
+        const struct guard* g2 = b;
+
+	return g1->id == g2->id;
 }
 
 struct guard* get_guard(struct cgs_array* guards, const char* data)
@@ -21,7 +24,7 @@ struct guard* get_guard(struct cgs_array* guards, const char* data)
 
 	struct guard tmp = { 0 };
 	if (sscanf(data, "Guard #%d ", &tmp.id) == 1) {
-		g = cgs_array_find(guards, &tmp, guard_cmp);
+		g = cgs_array_find(guards, guard_pred, &tmp);
 		if (!g)
 			g = cgs_array_push(guards, &tmp);
 	}
@@ -35,10 +38,9 @@ struct record {
 	char* info;
 };
 
-struct cgs_array* plot_guard_sleep_patterns(const struct cgs_array* records)
+void* plot_guard_sleep_patterns(struct cgs_array* guards,
+                const struct cgs_array* records)
 {
-	struct cgs_array* guards = cgs_array_new(struct guard);
-
 	const char* fmt = "[1518-%*d-%*d %*d:%d] %m[ G#a-z0-9]";
 
 	CgsStrIter b = cgs_array_begin(records);
@@ -112,19 +114,30 @@ int main(void)
 {
 	printf("Advent of Code 2018 Day 4: Repose Record\n");
 
-	struct cgs_array* records = cgs_io_readlines(stdin);
-	cgs_array_sort(records, cgs_str_cmp);
+        struct cgs_array records = { 0 };
+        if (!cgs_array_new(&records, sizeof(char*)))
+                return EXIT_FAILURE;
 
-	struct cgs_array* guards = plot_guard_sleep_patterns(records);
+        if (!cgs_io_readlines(stdin, &records))
+                return EXIT_FAILURE;
 
-	int part1 = find_egregious_sleeper(guards);
-	int part2 = find_consistent_sleeper(guards);
+	cgs_array_sort(&records, cgs_str_cmp);
+
+        struct cgs_array guards = { 0 };
+        if (!cgs_array_new(&guards, sizeof(struct guard)))
+                return EXIT_FAILURE;
+
+        if (!plot_guard_sleep_patterns(&guards, &records))
+                return EXIT_FAILURE;
+
+	int part1 = find_egregious_sleeper(&guards);
+	int part2 = find_consistent_sleeper(&guards);
 
 	printf("Part 1: %d\n", part1);
 	printf("Part 2: %d\n", part2);
 
-	cgs_array_free(guards);
-	cgs_array_free_all(records);
+	cgs_array_free(&guards);
+	cgs_array_free_all(&records);
 
 	return EXIT_SUCCESS;
 }
