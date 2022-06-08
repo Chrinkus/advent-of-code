@@ -7,7 +7,7 @@
 enum { MAX_SIDE = 1000 };
 
 struct claim {
-	int id, x, y, w, h;
+        int id, x, y, w, h;
 };
 
 void* read_input(struct cgs_array* input)
@@ -74,7 +74,7 @@ int get_solo_claim_id(struct cgs_array* input, const int** fabric)
 
 int main(void)
 {
-	printf("Advent of Code 2018 Day 3: No Matter How You Slice It\n");
+        printf("Advent of Code 2018 Day 3: No Matter How You Slice It\n");
 
         struct cgs_array input = { 0 };
         if (!cgs_array_new(&input, sizeof(struct claim)))
@@ -87,15 +87,15 @@ int main(void)
         if (!init_grid_and_mark_claims(&grid, &input))
                 return EXIT_FAILURE;
 
-	int part1 = fruity_count_if(&grid, is_multi_claim, NULL);
-	int part2 = get_solo_claim_id(&input, fruity_data(&grid));
+        int part1 = fruity_count_if(&grid, is_multi_claim, NULL);
+        int part2 = get_solo_claim_id(&input, fruity_data(&grid));
 
-	printf("Part 1: %d\n", part1);
-	printf("Part 2: %d\n", part2);
+        printf("Part 1: %d\n", part1);
+        printf("Part 2: %d\n", part2);
 
         cgs_array_free(&input);
         fruity_free(&grid);
 
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
 }
 
