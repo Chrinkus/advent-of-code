@@ -60,7 +60,7 @@ void free_input(struct input* input)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Reading input
+ * Input Processing
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void apply_offsets(void* p, size_t i, void* data)
 {
@@ -104,6 +104,9 @@ error_cleanup:
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Grid operations
+ * - Initialize grid
+ * - Plot initial coordinates
+ * - Grow regions outwardly from source coordinates
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void* init_grid(Fruity2D* grid, const struct input* input)
 {
@@ -189,7 +192,7 @@ error_cleanup:
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Get output for Part 1
+ * Part 1 - Get size of largest inner area
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void increment_area(Fruity2DCell cell, void* data)
 {
@@ -222,7 +225,7 @@ int get_largest_area(struct cgs_array* coords, const Fruity2D* g)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Part 2 predicate
+ * Part 2 - Determine the number of locations in the safe region
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int is_safe(Fruity2DCell cell, void* data)
 {
@@ -238,7 +241,7 @@ int is_safe(Fruity2DCell cell, void* data)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Print grid to visualize data
+ * BONUS - Print grid to visualize data
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void print_id(Fruity2DCell cell, void* data)
 {

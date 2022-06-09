@@ -3,12 +3,18 @@
 
 #include <cgs/cgs.h>
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Data Structures and Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 enum flags {
         FIRST = 1U,
         TWICE = 1U << 1,
         BOTH = FIRST | TWICE,
 };
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Input Processing
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void* read_input(struct cgs_array* shifts)
 {
         for (int n; scanf(" %d", &n) == 1; )
@@ -17,6 +23,9 @@ void* read_input(struct cgs_array* shifts)
         return shifts;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 1 and 2 - Loop the shifts until both parts are complete
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void* check_freq(struct cgs_rbt* seen, const int freq, size_t* flags, int* out)
 {
         struct cgs_variant v = { 0 };
@@ -55,6 +64,9 @@ void* run_shifts(const struct cgs_array* input, int* p1, int* p2)
         return p1;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
         printf("Advent of Code 2018 Day 1: Chronal Calibration\n");

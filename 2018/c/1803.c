@@ -4,12 +4,18 @@
 #include <cgs/cgs.h>
 #include <fruity.h>
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Data Structures and Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 enum { MAX_SIDE = 1000 };
 
 struct claim {
         int id, x, y, w, h;
 };
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Input Processing
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void* read_input(struct cgs_array* input)
 {
         for (struct claim c; scanf("#%d @ %d,%d: %dx%d ",
@@ -19,6 +25,9 @@ void* read_input(struct cgs_array* input)
         return input;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 1 - Mark claims on fabric and count overlapping squares
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void increment_claim(const void* element, size_t i, void* data)
 {
         const struct claim* c = element;
@@ -51,6 +60,9 @@ int is_multi_claim(Fruity2DCell cell, void* data)
         return *p > 1;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 2 - Find the one claim that doesn't overlap with others
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int is_solo_claim(const void* element, const void* data)
 {
         const struct claim* c = element;
@@ -72,6 +84,9 @@ int get_solo_claim_id(struct cgs_array* input, const int** fabric)
         return -1;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
         printf("Advent of Code 2018 Day 3: No Matter How You Slice It\n");

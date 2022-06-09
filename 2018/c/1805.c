@@ -5,10 +5,13 @@
 
 #include <cgs/cgs.h>
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 enum { NUM_TRIALS = 26 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Part 1
+ * Part 1 - Find the length of the fully reacted polymer
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int reaction(char a, char b)
 {
@@ -47,7 +50,7 @@ int get_reacted_length(const char* polymer)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Part 2
+ * Part 2 - Find which character to remove to produce the shortest polymer
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 void prepare_polymer(const char* base, char lo, char* out)
 {

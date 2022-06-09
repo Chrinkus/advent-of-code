@@ -3,6 +3,9 @@
 
 #include <cgs/cgs.h>
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Data Structures and Constants
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 enum { NUM_MINUTES = 60 };
 
 struct guard {
@@ -18,6 +21,15 @@ int guard_pred(const void* a, const void* b)
         return g1->id == g2->id;
 }
 
+struct record {
+        int minute;
+        int sleep_start;
+        char* info;
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Input Processing
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 struct guard* get_guard(struct cgs_array* guards, const char* data)
 {
         struct guard* g = NULL;
@@ -31,12 +43,6 @@ struct guard* get_guard(struct cgs_array* guards, const char* data)
 
         return g;
 }
-
-struct record {
-        int minute;
-        int sleep_start;
-        char* info;
-};
 
 void* plot_guard_sleep_patterns(struct cgs_array* guards,
                 const struct cgs_array* records)
@@ -68,6 +74,9 @@ void* plot_guard_sleep_patterns(struct cgs_array* guards,
         return guards;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 1 - Which guard spends the most time asleep?
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int find_egregious_sleeper(const struct cgs_array* guards)
 {
         const struct guard* g = cgs_array_begin(guards);
@@ -93,6 +102,9 @@ int find_egregious_sleeper(const struct cgs_array* guards)
         return g->id * max_minute;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 2 - Which guard sleeps the most on the same minute?
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int find_consistent_sleeper(const struct cgs_array* guards)
 {
         const struct guard* g = cgs_array_begin(guards);
@@ -110,6 +122,9 @@ int find_consistent_sleeper(const struct cgs_array* guards)
         return g->id * common_minute;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 int main(void)
 {
         printf("Advent of Code 2018 Day 4: Repose Record\n");
