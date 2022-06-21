@@ -7,6 +7,9 @@
  * optimization to be gained from storing the last marble and player of the
  * first game and continuing from there but it seems like it would just be
  * a 1% improvement.
+ *
+ * UPDATE: Apparently there's an 'intrusive' linked list that runs through
+ * your data objects. Maybe we need to add something to the library after all..
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,9 +18,14 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Data Structures and Constants
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-typedef int64_t Int;    // potentially big scores
+typedef int64_t Int;            // potentially big scores
 
-enum { MAGIC_VALUE = 23, MAGIC_STEPS = -7, NORMAL_STEPS = 2, P2_FACTOR = 100 };
+enum {
+        MAGIC_VALUE = 23,       // Triggers special game condition
+        MAGIC_STEPS = -7,
+        NORMAL_STEPS = 2,
+        P2_FACTOR = 100,
+};
 
 struct input {
         int players;
@@ -40,56 +48,6 @@ struct marble* marble_new(int val)
         return m;
 }
 
-struct marble_game {
-        struct marble* current;
-        Int* scores;
-        int num_players;
-        int max_marble;
-};
-
-void* marble_game_new(struct marble_game* mg, const struct input* input)
-{
-        struct marble* m = marble_new(0);
-        if (!m)
-                return NULL;
-
-        Int* scores = calloc(input->players, sizeof(Int));
-        if (!scores) {
-                free(m);
-                return NULL;
-        }
-        mg->current = m;
-        mg->scores = scores;
-        mg->num_players = input->players;
-        mg->max_marble = input->marbles;
-        return mg;
-}
-
-void marble_game_free(struct marble_game* mg)
-{
-        struct marble* curr = mg->current;
-        curr->prev->next = NULL;        // break circle
-
-        while (curr) {
-                struct marble* p = curr->next;
-                free(curr);
-                curr = p;
-        }
-        free(mg->scores);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Input Processing
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-int read_input(struct input* input)
-{
-        const char* fmt = "%d players; last marble is worth %d points";
-        return scanf(fmt, &input->players, &input->marbles) == 2;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Part 1 & 2 - Play the game, find the winner
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 struct marble* marble_advance(struct marble* m, int i)
 {
         if (i >= 0) {
@@ -120,11 +78,60 @@ struct marble* marble_remove(struct marble* m)
         return m->next;
 }
 
-void* play_game(struct marble_game* mg)
+struct marble_game {
+        struct marble* current;
+        Int* scores;
+        int num_players;
+};
+
+void* marble_game_new(struct marble_game* mg, int players)
+{
+        struct marble* m = marble_new(0);
+        if (!m)
+                return NULL;
+
+        Int* scores = calloc(players, sizeof(Int));
+        if (!scores) {
+                free(m);
+                return NULL;
+        }
+        mg->current = m;
+        mg->scores = scores;
+        mg->num_players = players;
+        return mg;
+}
+
+void marble_game_free(struct marble_game* mg)
+{
+        struct marble* curr = mg->current;
+        curr->prev->next = NULL;        // break circle
+
+        while (curr) {
+                struct marble* p = curr->next;
+                free(curr);
+                curr = p;
+        }
+        free(mg->scores);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Input Processing
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+int read_input(struct input* input)
+{
+        const char* fmt = "%d players; last marble is worth %d points";
+        return scanf(fmt, &input->players, &input->marbles) == 2;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 1 & 2 - Play the game, find the winner
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+void* play_game(struct marble_game* mg, int target)
 {
         struct marble* curr = mg->current;
 
-        for (int i = 0, m = 1; m <= mg->max_marble; ++m) {
+        for (int i = 0, m = 1; m <= target; ++m) {
                 if (m % MAGIC_VALUE == 0) {     // Handle the magic case
                         curr = marble_advance(curr, MAGIC_STEPS);
                         struct marble* p = curr;
@@ -140,7 +147,6 @@ void* play_game(struct marble_game* mg)
                 }
                 i = (i + 1) % mg->num_players;
         }
-        mg->current = curr;
         return mg;
 }
 
@@ -163,23 +169,26 @@ int main(void)
         if (!read_input(&input))
                 return EXIT_FAILURE;
 
+        // Play first game
         struct marble_game game1 = { 0 };
-        if (!marble_game_new(&game1, &input) || !play_game(&game1))
+        if (!marble_game_new(&game1, input.players)
+                        || !play_game(&game1, input.marbles))
                 return EXIT_FAILURE;
 
         Int part1 = get_max_score(&game1);
-        printf("Part 1: %"PRId64"\n", part1);
         marble_game_free(&game1);
 
-        input.marbles *= P2_FACTOR;
-
+        // Play second game
         struct marble_game game2 = { 0 };
-        if (!marble_game_new(&game2, &input) || !play_game(&game2))
+        if (!marble_game_new(&game2, input.players)
+                        || !play_game(&game2, input.marbles * P2_FACTOR))
                 return EXIT_FAILURE;
 
         Int part2 = get_max_score(&game2);
-        printf("Part 2: %"PRId64"\n", part2);
         marble_game_free(&game2);
+
+        printf("Part 1: %"PRId64"\n", part1);
+        printf("Part 2: %"PRId64"\n", part2);
 
         return EXIT_SUCCESS;
 }
