@@ -81,7 +81,7 @@ void project_future_growth(struct row* row, Int old_offset)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Part 1 - Simulate plant growth
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-const void* prepare_pots(struct cgs_string* pots, Int* offset)
+const void* prepare_row(struct cgs_string* pots, Int* offset)
 {
         const char* b = cgs_string_data(pots);
         const char* e = b + cgs_string_length(pots) - 1;
@@ -113,44 +113,43 @@ int note_match_cb(const void* elem, const void* data)
         return strncmp(n->pat, p, PAT_LEN) == 0;
 }
 
-void* advance_pots(struct row* row, struct cgs_array* notes)
+char* advance_pots(struct cgs_string* pots, struct cgs_array* notes)
 {
-        Int old_offset = row->offset;
-        struct cgs_string next = { 0 };
-        if (!cgs_string_new(&next))
+        const size_t len = cgs_string_length(pots) - PAD_LEN;
+        char* p = cgs_string_xfer(pots);
+
+        if (!cgs_string_new(pots))
                 return NULL;
 
-        const char* p = cgs_string_data(&row->pots);
-        for (size_t i = 0, len = cgs_string_length(&row->pots) - PAD_LEN;
-                        i != len; ++i) {
+        for (size_t i = 0; i < len; ++i) {
                 struct note* n = cgs_array_find(notes, note_match_cb, &p[i]);
-                if (!n || !cgs_string_push(&next, n->res))
+                if (!n || !cgs_string_push(pots, n->res))
                         return NULL;            // should always find match
         }
-        row->offset -= OFFSET_CORRECTION;
-        if (!prepare_pots(&next, &row->offset))
-                return NULL;
 
-        // Part 2
-        if (strcmp(cgs_string_data(&next), cgs_string_data(&row->pots)) == 0)
-                project_future_growth(row, old_offset);
-
-        cgs_string_free(&row->pots);
-        row->pots = next;
-
-        return row;
+        return p;
 }
 
 void* advance_generations(struct row* row, Int num_generations,
                 struct cgs_array* notes)
 {
-        if (!prepare_pots(&row->pots, &row->offset))
+        if (!prepare_row(&row->pots, &row->offset)) // Initial prep
                 return NULL;
 
         while (row->gen < num_generations) {
-                ++row->gen;             // key: THIS generation is set
-                if (!advance_pots(row, notes))
+                ++row->gen;                     // key: THIS generation is set
+                Int prev_offset = row->offset;
+
+                char* prev = advance_pots(&row->pots, notes);
+                if (!prev)
                         return NULL;
+                row->offset -= OFFSET_CORRECTION;
+
+                if (!prepare_row(&row->pots, &row->offset))
+                        return NULL;
+                if (strcmp(prev, cgs_string_data(&row->pots)) == 0)
+                        project_future_growth(row, prev_offset);
+                free(prev);
         }
         return row;
 }
