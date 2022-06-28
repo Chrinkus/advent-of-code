@@ -38,6 +38,7 @@ set(CMAKE_EXE_LINKER_FLAGS_PROFILE      "-pg" CACHE STRING "" FORCE)
 
 # General compilation flags
 add_compile_options(-Wall -Wextra -Werror)
+link_directories(${CMAKE_INSTALL_PREFIX}/lib64)
 
 if(APPLE)
         include_directories(${CMAKE_INSTALL_PREFIX}/include)
@@ -56,6 +57,7 @@ set(solutions
         "1809.c"
         "1810.c"
         "1811.c"
+        "1812.c"
 )
 
 foreach(file IN LISTS solutions)
