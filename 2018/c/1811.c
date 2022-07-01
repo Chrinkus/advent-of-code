@@ -46,7 +46,7 @@ int get_areasum(struct cell** g, int r, int c)
 void* grid_init(Fruity2D* grid, int sn)
 {
         if (!fruity_new(grid, DIM, DIM, sizeof(struct cell)))
-                return NULL;
+                return cgs_error_retnull("fruity_new");
 
         struct cell** g = fruity_data(grid);
 
@@ -112,11 +112,11 @@ int main(void)
 
         int input;
         if (scanf(" %d", &input) != 1)
-                return EXIT_FAILURE;
+                return cgs_error_retfail("scanf read fail");
 
         Fruity2D grid = { 0 };
         if (!grid_init(&grid, input))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("grid_init w/%d", input);
 
         struct square part1 = get_largest_power(&grid, PART1_SIZE);
         struct square part2 = get_largest_possible_power(&grid);

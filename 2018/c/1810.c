@@ -47,7 +47,7 @@ void* read_input(struct cgs_array* stars)
         const char* fmt = " position=< %d, %d> velocity=< %d, %d> ";
         for (struct light l; scanf(fmt, &l.x, &l.y, &l.dx, &l.dy) == 4; )
                 if (!cgs_array_push(stars, &l))
-                        return NULL;
+                        return cgs_error_retnull("cgs_array_push");
         return stars;
 }
 
@@ -124,7 +124,7 @@ void* init_sky(Fruity2D* sky, const struct frame* frame)
         int cols = extents_diff(&frame->w) + 1;
         void* res = fruity_new(sky, rows, cols, sizeof(char));
         if (!res)
-                return NULL;
+                return cgs_error_retnull("fruity_new %d x %d", rows, cols);
 
         char space = SPACE;
         fruity_init(sky, &space);
@@ -138,7 +138,7 @@ void* plot_stars(Fruity2D* sky, const struct cgs_array* stars)
         cgs_array_foreach(stars, set_frame_cb, &frame);
 
         if (!init_sky(sky, &frame))
-                return NULL;
+                return cgs_error_retnull("init_sky");
 
         int xoff = frame.w.min;
         int yoff = frame.h.min;
@@ -167,16 +167,16 @@ int main(void)
 
         struct cgs_array stars = { 0 };
         if (!cgs_array_new(&stars, sizeof(struct light)))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("cgs_array_new");
 
         if (!read_input(&stars))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("read_input");
 
         int part2 = wait_for_message(&stars);
 
         Fruity2D sky = { 0 };
         if (!plot_stars(&sky, &stars))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("plot_stars");
 
         printf("Part 1:\n");
         print_sky(&sky);

@@ -47,24 +47,24 @@ void* read_input_and_allocate(struct row* row, struct cgs_array* notes)
 {
         char* p = NULL;
         if (scanf(" initial state: %ms ", &p) != 1)
-                return NULL;
+                return cgs_error_retnull("scanf read fail");
 
         if (!cgs_string_new_from_string(&row->pots, p))
                 goto error_cleanup;
         free(p);
 
         if (!cgs_array_new(notes, sizeof(struct note)))
-                return NULL;
+                return cgs_error_retnull("cgs_array_new");
 
         for (struct note n; scanf(" %s => %c", n.pat, &n.res) == 2; )
                 if (!cgs_array_push(notes, &n))
-                        return NULL;
+                        return cgs_error_retnull("cgs_array_push");
 
         return row;
 
 error_cleanup:
         free(p);
-        return NULL;
+        return cgs_error_retnull("cgs_string_new_from_string");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -97,10 +97,10 @@ const void* prepare_row(struct cgs_string* pots, Int* offset)
         if (num_pre > 0) {
                 *offset += num_pre;
                 if (!cgs_string_prepend(pots, empty_pad, num_pre))
-                        return NULL;
+                        return cgs_error_retnull("cgs_string_prepend");
         }
         if (num_app > 0 && !cgs_string_append(pots, empty_pad, num_app))
-                return NULL;
+                return cgs_error_retnull("cgs_string_append");
 
         return pots;
 }
@@ -119,12 +119,12 @@ char* advance_pots(struct cgs_string* pots, struct cgs_array* notes)
         char* p = cgs_string_xfer(pots);
 
         if (!cgs_string_new(pots))
-                return NULL;
+                return cgs_error_retnull("cgs_string_new");
 
         for (size_t i = 0; i < len; ++i) {
                 struct note* n = cgs_array_find(notes, note_match_cb, &p[i]);
                 if (!n || !cgs_string_push(pots, n->res))
-                        return NULL;            // should always find match
+                        return cgs_error_retnull("cgs_string_push");
         }
 
         return p;
@@ -134,7 +134,7 @@ void* advance_generations(struct row* row, Int num_generations,
                 struct cgs_array* notes)
 {
         if (!prepare_row(&row->pots, &row->offset)) // Initial prep
-                return NULL;
+                return cgs_error_retnull("prepare_row");
 
         while (row->gen < num_generations) {
                 ++row->gen;                     // key: THIS generation is set
@@ -142,7 +142,7 @@ void* advance_generations(struct row* row, Int num_generations,
 
                 char* prev = advance_pots(&row->pots, notes);
                 if (!prev)
-                        return NULL;
+                        return cgs_error_retnull("advance_pots");
                 row->offset -= OFFSET_CORRECTION;
 
                 if (!prepare_row(&row->pots, &row->offset))
@@ -173,14 +173,16 @@ int main(void)
         struct row row = { 0 };
         struct cgs_array notes = { 0 };
         if (!read_input_and_allocate(&row, &notes))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("read_input_and_allocate");
 
         if (!advance_generations(&row, part1_gens, &notes))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("advance_generations %"PRId64"",
+                                part1_gens);
         Int part1 = score_plants(cgs_string_data(&row.pots), row.offset);
 
         if (!advance_generations(&row, part2_gens, &notes))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("advance_generations %"PRId64"",
+                                part2_gens);
         Int part2 = score_plants(cgs_string_data(&row.pots), row.offset);
 
         printf("Part 1: %"PRId64"\n", part1);
