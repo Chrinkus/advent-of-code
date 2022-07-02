@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+#include <cgs/cgs.h>
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Data Structures and Constants
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -42,7 +44,7 @@ struct marble* marble_new(int val)
 {
         struct marble* m = malloc(sizeof(struct marble));
         if (!m)
-                return NULL;
+                return cgs_error_retnull("malloc: %s", cgs_error_sysstr());
         m->value = val;
         m->next = m->prev = m;  // circular list, all marbles are round!
         return m;
@@ -88,12 +90,12 @@ void* marble_game_new(struct marble_game* mg, int players)
 {
         struct marble* m = marble_new(0);
         if (!m)
-                return NULL;
+                return cgs_error_retnull("marble_new");
 
         Int* scores = calloc(players, sizeof(Int));
         if (!scores) {
                 free(m);
-                return NULL;
+                return cgs_error_retnull("calloc: %s", cgs_error_sysstr());
         }
         mg->current = m;
         mg->scores = scores;
@@ -141,7 +143,7 @@ void* play_game(struct marble_game* mg, int target)
                 } else {                        // Handle normal case
                         struct marble* p = marble_new(m);
                         if (!p)
-                                return NULL;
+                                return cgs_error_retnull("marble_new");
                         curr = marble_advance(curr, NORMAL_STEPS);
                         curr = marble_insert(curr, p);
                 }
@@ -167,22 +169,24 @@ int main(void)
 
         struct input input = { 0 };
         if (!read_input(&input))
-                return EXIT_FAILURE;
+                return cgs_error_retfail("read_input");
 
         // Play first game
         struct marble_game game1 = { 0 };
-        if (!marble_game_new(&game1, input.players)
-                        || !play_game(&game1, input.marbles))
-                return EXIT_FAILURE;
+        if (!marble_game_new(&game1, input.players))
+                return cgs_error_retfail("marble_game_new");
+        if (!play_game(&game1, input.marbles))
+                return cgs_error_retfail("play_game");
 
         Int part1 = get_max_score(&game1);
         marble_game_free(&game1);
 
         // Play second game
         struct marble_game game2 = { 0 };
-        if (!marble_game_new(&game2, input.players)
-                        || !play_game(&game2, input.marbles * P2_FACTOR))
-                return EXIT_FAILURE;
+        if (!marble_game_new(&game2, input.players))
+                return cgs_error_retfail("marble_game_new");
+        if (!play_game(&game2, input.marbles * P2_FACTOR))
+                return cgs_error_retfail("play_game");
 
         Int part2 = get_max_score(&game2);
         marble_game_free(&game2);

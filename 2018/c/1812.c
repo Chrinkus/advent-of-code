@@ -47,7 +47,7 @@ void* read_input_and_allocate(struct row* row, struct cgs_array* notes)
 {
         char* p = NULL;
         if (scanf(" initial state: %ms ", &p) != 1)
-                return cgs_error_retnull("scanf read fail");
+                return cgs_error_retnull("scanf: %s", cgs_error_sysstr());
 
         if (!cgs_string_new_from_string(&row->pots, p))
                 goto error_cleanup;
