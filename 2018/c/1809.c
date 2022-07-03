@@ -44,7 +44,7 @@ struct marble* marble_new(int val)
 {
         struct marble* m = malloc(sizeof(struct marble));
         if (!m)
-                return cgs_error_retnull("malloc: %s", cgs_error_sysstr());
+                return cgs_error_retnull("malloc: %s", cgs_error_sys());
         m->value = val;
         m->next = m->prev = m;  // circular list, all marbles are round!
         return m;
@@ -95,7 +95,7 @@ void* marble_game_new(struct marble_game* mg, int players)
         Int* scores = calloc(players, sizeof(Int));
         if (!scores) {
                 free(m);
-                return cgs_error_retnull("calloc: %s", cgs_error_sysstr());
+                return cgs_error_retnull("calloc: %s", cgs_error_sys());
         }
         mg->current = m;
         mg->scores = scores;
