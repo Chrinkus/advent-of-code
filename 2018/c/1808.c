@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <cgs/cgs.h>
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Data Structures and Constants
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -36,7 +38,7 @@ struct node* node_new(void)
 {
         struct node* p = malloc(sizeof(struct node));
         if (!p)
-                return NULL;
+                return cgs_error_retnull("malloc: %s", cgs_error_sys());
         p->children = NULL;
         p->meta = NULL;
         p->value = META_END;
@@ -64,29 +66,31 @@ void* read_node(struct node* n)
 {
         int c, m;
         if (scanf(" %d %d", &c, &m) != 2)
-                return NULL;
+                return cgs_error_retnull("scanf: %s", cgs_error_sys());
 
         struct node** pn = malloc(sizeof(struct node*) * (c+1));
         if (!pn)
-                return NULL;
+                return cgs_error_retnull("malloc: %s", cgs_error_sys());
         n->children = pn;
         n->num_children = c;
 
         for (int i = 0; i < c; ++i) {
                 pn[i] = node_new();
-                if (!pn[i] || !read_node(pn[i]))
-                        return NULL;
+                if (!pn[i])
+                        return cgs_error_retnull("node_new");
+                if (!read_node(pn[i]))
+                        return cgs_error_retnull("read_node");
         }
         pn[c] = NULL;           /* Terminate */
 
         int* pi = malloc(sizeof(int) * (m+1));
         if (!pi)
-                return NULL;
+                return cgs_error_retnull("malloc: %s", cgs_error_sys());
         n->meta = pi;
 
         for (int i = 0; i < m; ++i) {
                 if (scanf(" %d", &pi[i]) != 1)
-                        return NULL;
+                        return cgs_error_retnull("scanf: %s", cgs_error_sys());
         }
         pi[m] = META_END;       /* Terminate */
 
@@ -141,8 +145,10 @@ int main(void)
         printf("Advent of Code 2018 Day 8: Memory Maneuver\n");
 
         struct node* root = node_new();
-        if (!root || !read_node(root))
-                return EXIT_FAILURE;
+        if (!root)
+                return cgs_error_retfail("node_new");
+        if (!read_node(root))
+                return cgs_error_retfail("read_node");
 
         int part1 = get_meta_sum(root);
         int part2 = get_node_value(root);
