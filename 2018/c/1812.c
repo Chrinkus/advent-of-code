@@ -49,7 +49,7 @@ void* read_input_and_allocate(struct row* row, struct cgs_array* notes)
         if (scanf(" initial state: %ms ", &p) != 1)
                 return cgs_error_retnull("scanf: %s", cgs_error_sys());
 
-        if (!cgs_string_new_from_string(&row->pots, p))
+        if (!cgs_string_new_from_str(&row->pots, p))
                 goto error_cleanup;
         free(p);
 
@@ -64,7 +64,7 @@ void* read_input_and_allocate(struct row* row, struct cgs_array* notes)
 
 error_cleanup:
         free(p);
-        return cgs_error_retnull("cgs_string_new_from_string");
+        return cgs_error_retnull("cgs_string_new_from_str");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -96,11 +96,11 @@ const void* prepare_row(struct cgs_string* pots, Int* offset)
 
         if (num_pre > 0) {
                 *offset += num_pre;
-                if (!cgs_string_prepend(pots, empty_pad, num_pre))
-                        return cgs_error_retnull("cgs_string_prepend");
+                if (!cgs_string_prepend_str(pots, empty_pad, num_pre))
+                        return cgs_error_retnull("cgs_string_prepend_str");
         }
-        if (num_app > 0 && !cgs_string_append(pots, empty_pad, num_app))
-                return cgs_error_retnull("cgs_string_append");
+        if (num_app > 0 && !cgs_string_append_str(pots, empty_pad, num_app))
+                return cgs_error_retnull("cgs_string_append_str");
 
         return pots;
 }
