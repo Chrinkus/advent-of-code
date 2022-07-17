@@ -223,7 +223,7 @@ set_track_and_log_carts(Fruity2D* track, struct cgs_array* carts,
 }
 
 char*
-sim_carts_till_first_crash(struct cgs_array* carts, Fruity2D* track)
+sim_carts_till_first_crash(const struct cgs_array* carts, Fruity2D* track)
 {
         struct cart* c = NULL;
 
@@ -246,8 +246,55 @@ sim_carts_till_first_crash(struct cgs_array* carts, Fruity2D* track)
                 }
         }
 collision_detected:
+        char* ret = cart_to_string(c);
         cgs_array_free(&tmp);
-        return cart_to_string(c);
+        return ret;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Part 2 - Sim carts, remove crashes, find last one
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+size_t remove_collision(struct cgs_array* carts, size_t i, const struct cart* c)
+{
+        size_t n = 0;
+        for (size_t j = 0, l = cgs_array_length(carts); j < l; ++j) {
+                if (i == j)
+                        continue;
+                const struct cart* d = cgs_array_get(carts, j);
+                if (cart_collision_detect(c, d)) {
+                        if (j < i) {
+                                cgs_array_remove(carts, i);
+                                cgs_array_remove(carts, j);
+                                n = 2;
+                        } else {
+                                cgs_array_remove(carts, j);
+                                cgs_array_remove(carts, i);
+                                n = 1;
+                        }
+                        break;
+                }
+        }
+        return n;
+}
+
+char* sim_carts_till_last_cart(const struct cgs_array* carts, Fruity2D* track)
+{
+        struct cgs_array tmp = { 0 };
+        if (!cgs_array_copy(&tmp, carts))
+                return cgs_error_retnull("cgs_array_copy");
+
+        while (cgs_array_length(&tmp) > 1) {
+                cgs_array_sort(&tmp, cart_cmp);
+                for (size_t i = 0; i < cgs_array_length(&tmp); ++i) {
+                        struct cart* c = cgs_array_get_mutable(&tmp, i);
+                        move_cart(c, track);
+                        i -= remove_collision(&tmp, i, c);
+                }
+        }
+        const struct cart* c = cgs_array_get(&tmp, 0);
+        char* ret = cart_to_string(c);
+        cgs_array_free(&tmp);
+        return ret;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -270,12 +317,15 @@ int main(void)
         if (!part1)
                 return cgs_error_retfail("sim_carts_till_first_crash");
 
-        char* part2 = NULL;
+        char* part2 = sim_carts_till_last_cart(&carts, &track);
+        if (!part2)
+                return cgs_error_retfail("sim_carts_till_last_one");
 
         printf("Part 1: %s\n", part1);
         printf("Part 2: %s\n", part2);
 
         free(part1);
+        free(part2);
 
         cgs_array_free_all(&input);
         cgs_array_free(&carts);
