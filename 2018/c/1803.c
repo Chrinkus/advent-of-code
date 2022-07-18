@@ -47,7 +47,7 @@ void* init_grid_and_mark_claims(Fruity2D* g, const struct cgs_array* input)
         int n = 0;
         fruity_init(g, &n);
 
-        cgs_array_foreach(input, increment_claim, fruity_data(g));
+        cgs_array_foreach(input, increment_claim, fruity_data_mutable(g));
 
         return g;
 }
@@ -75,7 +75,7 @@ int is_solo_claim(const void* element, const void* data)
         return CGS_TRUE;
 }
 
-int get_solo_claim_id(struct cgs_array* input, const int** fabric)
+int get_solo_claim_id(struct cgs_array* input, const int*const* fabric)
 {
         struct claim* solo = cgs_array_find(input, is_solo_claim, fabric);
         if (solo)

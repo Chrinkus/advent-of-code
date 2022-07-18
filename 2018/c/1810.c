@@ -143,7 +143,7 @@ void* plot_stars(Fruity2D* sky, const struct cgs_array* stars)
         int xoff = frame.w.min;
         int yoff = frame.h.min;
 
-        char** s = fruity_data(sky);
+        char** s = fruity_data_mutable(sky);
         for (size_t i = 0; i < cgs_array_length(stars); ++i) {
                 const struct light* l = cgs_array_get(stars, i);
                 s[l->y - yoff][l->x - xoff] = STAR;

@@ -139,7 +139,7 @@ handle_intersection(struct cart* c)
 }
 
 void
-move_cart(struct cart* c, Fruity2D* track)
+move_cart(struct cart* c, const Fruity2D* track)
 {
         const char*const* pt = fruity_data(track);
 
@@ -186,7 +186,7 @@ const struct cgs_array*
 set_track_and_log_carts(Fruity2D* track, struct cgs_array* carts,
                 const struct cgs_array* input)
 {
-        char** fp = fruity_data(track);
+        char** fp = fruity_data_mutable(track);
         for (size_t i = 0; i <  cgs_array_length(input); ++i) {
                 // This is a problem..
                 const char*const s = *(CgsStrIter)cgs_array_get(input, i);
@@ -223,7 +223,7 @@ set_track_and_log_carts(Fruity2D* track, struct cgs_array* carts,
 }
 
 char*
-sim_carts_till_first_crash(const struct cgs_array* carts, Fruity2D* track)
+sim_carts_till_first_crash(const struct cgs_array* carts, const Fruity2D* track)
 {
         struct cart* c = NULL;
 
@@ -277,7 +277,8 @@ size_t remove_collision(struct cgs_array* carts, size_t i, const struct cart* c)
         return n;
 }
 
-char* sim_carts_till_last_cart(const struct cgs_array* carts, Fruity2D* track)
+char* sim_carts_till_last_cart(const struct cgs_array* carts,
+                const Fruity2D* track)
 {
         struct cgs_array tmp = { 0 };
         if (!cgs_array_copy(&tmp, carts))

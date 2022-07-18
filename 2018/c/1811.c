@@ -31,7 +31,8 @@ int get_power(int x, int y, int sn)
         return power;
 }
 
-int get_areasum(struct cell** g, int r, int c)
+int get_areasum(struct cell*const*const g, int r, int c)
+        // Why can't struct be const?
 {
         int as = g[r][c].power;
         if (r > 0)
@@ -48,7 +49,7 @@ void* grid_init(Fruity2D* grid, int sn)
         if (!fruity_new(grid, DIM, DIM, sizeof(struct cell)))
                 return cgs_error_retnull("fruity_new");
 
-        struct cell** g = fruity_data(grid);
+        struct cell** g = fruity_data_mutable(grid);
 
         for (int i = 0; i < DIM; ++i) {
                 for (int j = 0; j < DIM; ++j) {
@@ -63,7 +64,7 @@ void* grid_init(Fruity2D* grid, int sn)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Part 1 - Find largest 3x3 sum
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-int get_area_power(struct cell** g, int r, int c, int sz)
+int get_area_power(const struct cell*const* g, int r, int c, int sz)
 {
         int tl = r > 0 && c > 0 ? g[r-1][c-1].areasum : 0;      // outside
         int tr = r > 0 ? g[r-1][c+sz-1].areasum : 0;            // outside
@@ -73,10 +74,10 @@ int get_area_power(struct cell** g, int r, int c, int sz)
         return br - tr - bl + tl;
 }
 
-struct square get_largest_power(Fruity2D* grid, int size)
+struct square get_largest_power(const Fruity2D* grid, int size)
 {
         struct square sq = { .size = size };
-        struct cell** g = fruity_data(grid);
+        const struct cell*const* g = fruity_data(grid);
 
         for (int r = 0; r < DIM - size + 1; ++r)
                 for (int c = 0; c < DIM - size + 1; ++c) {
@@ -90,7 +91,7 @@ struct square get_largest_power(Fruity2D* grid, int size)
         return sq;
 }
 
-struct square get_largest_possible_power(Fruity2D* grid)
+struct square get_largest_possible_power(const Fruity2D* grid)
 {
         struct square sq = { 0 };
 
