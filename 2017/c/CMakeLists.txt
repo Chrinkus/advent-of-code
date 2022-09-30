@@ -41,6 +41,7 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib64)
 
 set(solutions
         "1701.c"
+        "1702.c"
 )
 
 foreach(file IN LISTS solutions)
