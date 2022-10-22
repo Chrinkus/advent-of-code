@@ -12,13 +12,13 @@ fn main() {
 fn read_input() -> Vec<String> {
     io::stdin()
         .lines()
-        .map(|r| r.unwrap())
+        .map(|line| line.unwrap())
         .collect()
 }
 
 fn get_power_consumption(report: &Vec<String>) -> i32 {
     let counts = pos_on_counts(report);
-    let half: i32 = (report.len() / 2).try_into().unwrap();
+    let half = report.len() / 2;
 
     let mut gamma = String::new();
     let mut epsilon = String::new();
@@ -34,8 +34,8 @@ fn get_power_consumption(report: &Vec<String>) -> i32 {
     btoi(&gamma) * btoi(&epsilon)
 }
 
-fn pos_on_counts(report: &Vec<String>) -> Vec<i32> {
-    let mut counts: Vec<i32> = vec![0; report[0].len()];
+fn pos_on_counts(report: &Vec<String>) -> Vec<usize> {
+    let mut counts: Vec<usize> = vec![0; report[0].len()];
     for line in report.iter() {
         for (i, ch) in line.chars().enumerate() {
             if ch == '1' {
@@ -54,11 +54,11 @@ fn get_life_support_rating(report: &Vec<String>) -> i32 {
     filter_rating(report, get_oxy_char) * filter_rating(report, get_c02_char)
 }
 
-fn filter_rating(report: &Vec<String>, f: fn(usize, usize) -> char) -> i32 {
+fn filter_rating(report: &Vec<String>, bc: fn(usize, usize) -> char) -> i32 {
     let mut lines = report.clone();
     for i in 0..lines[0].len() {
         let count = count_ones_at_pos(&lines, i);
-        let ch = f(count, lines.len());
+        let ch = bc(count, lines.len());
         lines = filter_char_at_pos(lines, ch, i);
 
         if lines.len() == 1 {
@@ -88,11 +88,10 @@ fn count_ones_at_pos(report: &Vec<String>, pos: usize) -> usize {
 }
 
 fn filter_char_at_pos(vs: Vec<String>, ch: char, pos: usize) -> Vec<String> {
-    let mut v = Vec::new();
-    for s in vs.iter() {
-        if s.chars().nth(pos).unwrap() == ch {
-            v.push(s.clone());
-        }
-    }
+    let v = vs
+        .iter()
+        .filter(|s| s.chars().nth(pos).unwrap() == ch)
+        .map(ToString::to_string)
+        .collect();
     v
 }
