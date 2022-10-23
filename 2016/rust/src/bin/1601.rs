@@ -1,4 +1,6 @@
 use std::io;
+use std::fmt;
+use std::collections::HashSet;
 
 #[derive(Debug,Clone,Copy)]
 enum Turn {
@@ -90,10 +92,18 @@ impl Position {
     }
 }
 
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
+    }
+}
+
 fn main() {
     let input = read_instructions();
     let part1 = follow_instructions(&input);
     println!("Part 1: {part1}");
+    let part2 = find_first_repeat(&input);
+    println!("Part 2: {part2}");
 }
 
 fn read_instructions() -> Vec<Instruction> {
@@ -113,6 +123,23 @@ fn follow_instructions(vi: &Vec<Instruction>) -> i32 {
     for ins in vi.iter() {
         pos.turn(ins.t);
         pos.advance(ins.n);
+    }
+    pos.distance_from_origin()
+}
+
+fn find_first_repeat(vi: &Vec<Instruction>) -> i32 {
+    let mut pos = Position::new();
+    let mut seen = HashSet::new();
+    'outer: for ins in vi.iter() {
+        pos.turn(ins.t);
+        for _ in 0..ins.n {
+            pos.advance(1);
+            let s = pos.to_string();
+            if seen.contains(&s) {
+                break 'outer;
+            }
+            seen.insert(s);
+        }
     }
     pos.distance_from_origin()
 }
