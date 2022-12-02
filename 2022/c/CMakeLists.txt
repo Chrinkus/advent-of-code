@@ -15,6 +15,7 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib64)
 # Solution processing
 set(solutions
         "2201.c"
+        "2202.c"
 )
 
 foreach(file IN LISTS solutions)
