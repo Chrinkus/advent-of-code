@@ -3,7 +3,7 @@
 
 #include <cgs/cgs.h>
 
-enum scores { ROCK = 1, PAPER = 2, SCISSORS = 3, WIN = 6, DRAW = 3 };
+enum scores { ROCK = 1, PAPER = 2, SCISSORS = 3, WIN = 6, LOSE = 0, DRAW = 3 };
 enum choice {
         OPP_ROCK = 'A',
         OPP_PAPER = 'B',
@@ -11,6 +11,9 @@ enum choice {
         MY_ROCK = 'X',
         MY_PAPER = 'Y',
         MY_SCISSORS = 'Z',
+        RES_LOSE = 'X',
+        RES_DRAW = 'Y',
+        RES_WIN = 'Z',
 };
 
 int
@@ -54,30 +57,30 @@ int
 get_winner(const char opp)
 {
         switch (opp) {
-        case 'A':       return PAPER;
-        case 'B':       return SCISSORS;
-        case 'C':       return ROCK;
-        default:        return err_char(opp);
+        case OPP_ROCK:          return PAPER;
+        case OPP_PAPER:         return SCISSORS;
+        case OPP_SCISSORS:      return ROCK;
+        default:                return err_char(opp);
         }
 }
 
 int get_loser(const char opp)
 {
         switch (opp) {
-        case 'A':       return SCISSORS;
-        case 'B':       return ROCK;
-        case 'C':       return PAPER;
-        default:        return err_char(opp);
+        case OPP_ROCK:          return SCISSORS;
+        case OPP_PAPER:         return ROCK;
+        case OPP_SCISSORS:      return PAPER;
+        default:                return err_char(opp);
         }
 }
 
 int get_draw(const char opp)
 {
         switch (opp) {
-        case 'A':       return ROCK;
-        case 'B':       return PAPER;
-        case 'C':       return SCISSORS;
-        default:        return err_char(opp);
+        case OPP_ROCK:          return ROCK;
+        case OPP_PAPER:         return PAPER;
+        case OPP_SCISSORS:      return SCISSORS;
+        default:                return err_char(opp);
         }
 }
 
@@ -86,9 +89,9 @@ score_round_2(char them, char res)
 {
         int score = 0;
         switch (res) {
-        case 'X':       score += get_loser(them);               break;
-        case 'Y':       score += get_draw(them) + DRAW;         break;
-        case 'Z':       score += get_winner(them) + WIN;        break;
+        case RES_WIN:   score += WIN  + get_winner(them);       break;
+        case RES_LOSE:  score += LOSE + get_loser(them);        break;
+        case RES_DRAW:  score += DRAW + get_draw(them);         break;
         default:        return err_char(res);
         }
         return score;
