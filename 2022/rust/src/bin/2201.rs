@@ -15,9 +15,14 @@ fn main() -> io::Result<()> {
         }
         buff.clear();
     }
+    cals.push(calories);
 
-    let part1 = cals.iter().max().unwrap();
+    let part1: i32 = cals.iter().max().unwrap();    // Leave it for learning
     println!("{part1}");
+
+    cals.sort_unstable_by(|a, b| b.cmp(a));     // Sort negates need for max
+    let part2: i32 = cals[..3].iter().sum();
+    println!("{part2}");
 
     Ok(())
 }
