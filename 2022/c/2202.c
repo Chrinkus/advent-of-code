@@ -5,9 +5,9 @@
 
 enum scores { ROCK = 1, PAPER = 2, SCISSORS = 3, WIN = 6, LOSE = 0, DRAW = 3 };
 enum choice {
-        OPP_ROCK = 'A',
-        OPP_PAPER = 'B',
-        OPP_SCISSORS = 'C',
+        OP_ROCK = 'A',
+        OP_PAPER = 'B',
+        OP_SCISSORS = 'C',
         MY_ROCK = 'X',
         MY_PAPER = 'Y',
         MY_SCISSORS = 'Z',
@@ -24,7 +24,7 @@ err_char(const char ch)
 }
 
 int
-score_round_1(char them, char me)
+score_system_1(char them, char me)
 {
         int score = 0;
         switch (me) {
@@ -35,15 +35,15 @@ score_round_1(char them, char me)
         }
 
         switch (them) {
-        case OPP_ROCK:
+        case OP_ROCK:
                 if      (me == MY_PAPER)        score += WIN;
                 else if (me == MY_ROCK)         score += DRAW;
                 break;
-        case OPP_PAPER:
+        case OP_PAPER:
                 if      (me == MY_SCISSORS)     score += WIN;
                 else if (me == MY_PAPER)        score += DRAW;
                 break;
-        case OPP_SCISSORS:
+        case OP_SCISSORS:
                 if      (me == MY_ROCK)         score += WIN;
                 else if (me == MY_SCISSORS)     score += DRAW;
                 break;
@@ -57,9 +57,9 @@ int
 get_winner(const char opp)
 {
         switch (opp) {
-        case OPP_ROCK:          return PAPER;
-        case OPP_PAPER:         return SCISSORS;
-        case OPP_SCISSORS:      return ROCK;
+        case OP_ROCK:           return PAPER;
+        case OP_PAPER:          return SCISSORS;
+        case OP_SCISSORS:       return ROCK;
         default:                return err_char(opp);
         }
 }
@@ -67,31 +67,31 @@ get_winner(const char opp)
 int get_loser(const char opp)
 {
         switch (opp) {
-        case OPP_ROCK:          return SCISSORS;
-        case OPP_PAPER:         return ROCK;
-        case OPP_SCISSORS:      return PAPER;
+        case OP_ROCK:           return SCISSORS;
+        case OP_PAPER:          return ROCK;
+        case OP_SCISSORS:       return PAPER;
         default:                return err_char(opp);
         }
 }
 
-int get_draw(const char opp)
+int get_drawer(const char opp)
 {
         switch (opp) {
-        case OPP_ROCK:          return ROCK;
-        case OPP_PAPER:         return PAPER;
-        case OPP_SCISSORS:      return SCISSORS;
+        case OP_ROCK:           return ROCK;
+        case OP_PAPER:          return PAPER;
+        case OP_SCISSORS:       return SCISSORS;
         default:                return err_char(opp);
         }
 }
 
 int
-score_round_2(char them, char res)
+score_system_2(char them, char res)
 {
         int score = 0;
         switch (res) {
         case RES_WIN:   score += WIN  + get_winner(them);       break;
         case RES_LOSE:  score += LOSE + get_loser(them);        break;
-        case RES_DRAW:  score += DRAW + get_draw(them);         break;
+        case RES_DRAW:  score += DRAW + get_drawer(them);       break;
         default:        return err_char(res);
         }
         return score;
@@ -100,9 +100,9 @@ score_round_2(char them, char res)
 void
 play_rps(int* p1, int* p2)
 {
-        for (char them, me; scanf("%c %c\n", &them, &me) == 2; ) {
-                *p1 += score_round_1(them, me);
-                *p2 += score_round_2(them, me);
+        for (char them, mys; scanf("%c %c\n", &them, &mys) == 2; ) {
+                *p1 += score_system_1(them, mys);
+                *p2 += score_system_2(them, mys);
         }
 }
 
