@@ -16,6 +16,8 @@ I needed to quickly add a reverse-integer-sort to my library for sorting from la
 
 Wow! This puzzle exposed a quirk in my childhood, in our primary school we played "Scissors, paper, rock". Part 1 kept failing because I was reading 'A' as scissors, 'B' as paper and 'C' as rock. Not only was I processing the opponents moves wrong, I was all over the place on parsing the results.
 
+The key here was converting the mapping the letter-based input to enums with sensible names to keep the logic straight when reading the code.
+
 The reads were easy, `scanf` to the rescue once again!
 
 Anyway, dual three-way comparisons are awkward so I look forward to sniping a better solution than `if`'s inside `switch`'s or dispatching to small functions.
