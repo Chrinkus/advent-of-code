@@ -21,3 +21,17 @@ The key here was converting the mapping the letter-based input to enums with sen
 The reads were easy, `scanf` to the rescue once again!
 
 Anyway, dual three-way comparisons are awkward so I look forward to sniping a better solution than `if`'s inside `switch`'s or dispatching to small functions.
+
+### Day 3 - Rucksack Reorganization
+
+#### Library Notes
+
+Every character-fiddling problem seems to expose a flaw in my string implementation. This time it was how to handle a vector of strings, or, how to clean up afterwards. I had to add a `vector_free_all_with` function to take a custom deallocator. After that it was all about char-counting.
+
+In 2020 I made my first attempt at solving AoC in C using my first attempt at a general C library. That one had a lot of forbidden macro magic in it and I decided to start over with my current library. One bit that I miss was my char-counting struct. If another day comes up that uses it I'll strongly consider adding a char counter to my new library.
+
+#### Challenge Notes
+
+Counting characters and detecting matches is fun in C, I'm not looking forward to doing this in Rust. Maybe I'll learn something.
+
+Part 2 brought up another 3-way comparison situation. Interesting, seems to be a sub-theme this year.. I thought of sorting before comparing but in the end I started flipping zeroes in an array and checking counts for repeats. The 'a' = 1 instead of 0 initially seemed like it could be an annoyance but instead I extended the count buffer by one and ignored the first element.
