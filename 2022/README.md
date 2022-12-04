@@ -35,3 +35,9 @@ In 2020 I made my first attempt at solving AoC in C using my first attempt at a 
 Counting characters and detecting matches is fun in C, I'm not looking forward to doing this in Rust. Maybe I'll learn something.
 
 Part 2 brought up another 3-way comparison situation. Interesting, seems to be a sub-theme this year.. I thought of sorting before comparing but in the end I started flipping zeroes in an array and checking counts for repeats. The 'a' = 1 instead of 0 initially seemed like it could be an annoyance but instead I extended the count buffer by one and ignored the first element.
+
+### Day 4 - Camp Cleanup
+
+This was a line collision problem. We're tasked to count when one line contains another and when two lines overlap in any way. Nice and short.
+
+No library needed today! Though maybe I should have some 1D, 2D and 3D collision detection ready in my bag of tricks..
