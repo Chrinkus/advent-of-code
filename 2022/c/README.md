@@ -18,13 +18,13 @@ Anyway, dual three-way comparisons are awkward so I look forward to sniping a be
 
 ## Day 3 - Rucksack Reorganization
 
-#### Library Notes
+### Library Notes
 
 Every character-fiddling problem seems to expose a flaw in my string implementation. This time it was how to handle a vector of strings, or, how to clean up afterwards. I had to add a `vector_free_all_with` function to take a custom deallocator. After that it was all about char-counting.
 
 In 2020 I made my first attempt at solving AoC in C using my first attempt at a general C library. That one had a lot of forbidden macro magic in it and I decided to start over with my current library. One bit that I miss was my char-counting struct. If another day comes up that uses it I'll strongly consider adding a char counter to my new library.
 
-#### Challenge Notes
+### Challenge Notes
 
 Counting characters and detecting matches is fun in C, I'm not looking forward to doing this in Rust. Maybe I'll learn something.
 
@@ -38,14 +38,24 @@ No library needed today! Though maybe I should have some 1D, 2D and 3D collision
 
 ## Day 5 - Supply Stacks
 
-#### Challenge Notes
+### Challenge Notes
 
 The READ! Another two-section input set. Then we're moving vertical stacks across lines! I usually don't like to make assumptions about my input but I had to hard-code the stride for the column reads. I ended up wrapping the stack vectors in structs. Not sure if that was best or not.
 
 The moving of crates wasn't that bad initially but part 2 requires a ranged swap on a vector which I don't have yet. Maybe something to add later. In the meantime I used a third vector as a buffer.
 
-#### Library Notes
+### Library Notes
 
 Added a few functions to the vector implementation. I've wanted a `_first` and `_last` for a while but didn't have a good idea for how to make that work for generic types. More and more I'm turning to `memcpy` to get these things done. I'm sure if I look it up I'll find a few articles about how DANGEROUS and HACKY memcpy is but whatever.
 
 Another addition was a `_pop` function, also utilizing `memcpy` to great success. This was useful for part 1 with the one-at-a-time element moves. I'll need to get to the drawing board for a ranged swapper. My early thoughts is that I will shave a slice off the back of a source vector and place it on the back of a destination vector. But what to call it..?
+
+## Day 6 - Tuning Trouble
+
+### Challenge Notes
+
+What a delightful challenge! I used a ring-y buffer for my last n-characters and it worked well. The test for different characters felt brute-force-ish but it still short circuits on failure so I feel it's fast enough.
+
+### Library Notes
+
+No libary usage today.
