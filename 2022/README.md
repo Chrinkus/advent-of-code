@@ -41,3 +41,17 @@ Part 2 brought up another 3-way comparison situation. Interesting, seems to be a
 This was a line collision problem. We're tasked to count when one line contains another and when two lines overlap in any way. Nice and short.
 
 No library needed today! Though maybe I should have some 1D, 2D and 3D collision detection ready in my bag of tricks..
+
+### Day 5 - Supply Stacks
+
+#### Challenge Notes
+
+The READ! Another two-section input set. Then we're moving vertical stacks across lines! I usually don't like to make assumptions about my input but I had to hard-code the stride for the column reads. I ended up wrapping the stack vectors in structs. Not sure if that was best or not.
+
+The moving of crates wasn't that bad initially but part 2 requires a ranged swap on a vector which I don't have yet. Maybe something to add later. In the meantime I used a third vector as a buffer.
+
+#### Library Notes
+
+Added a few functions to the vector implementation. I've wanted a `_first` and `_last` for a while but didn't have a good idea for how to make that work for generic types. More and more I'm turning to `memcpy` to get these things done. I'm sure if I look it up I'll find a few articles about how DANGEROUS and HACKY memcpy is but whatever.
+
+Another addition was a `_pop` function, also utilizing `memcpy` to great success. This was useful for part 1 with the one-at-a-time element moves. I'll need to get to the drawing board for a ranged swapper. My early thoughts is that I will shave a slice off the back of a source vector and place it on the back of a destination vector. But what to call it..?
