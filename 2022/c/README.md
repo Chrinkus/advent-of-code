@@ -1,5 +1,22 @@
 # The C Journal
 
+This year I will be utilizing my general-purpose library [libcgs](https://github.com/Chrinkus/libcgs/tree/v0.5). With that dependency installed all that is needed to build these solutions is the following:
+
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ cmake --build .
+```
+
+From the build directory, run any solution providing the input as `stdin`. Here is an example of running day 1 with input from a folder in my documents directory:
+
+```
+$ ./2201 < ~/Documents/aoc/2022-01.txt
+```
+
+Your filesystem setup may be different.
+
 ## Day 1 - Calorie Counting
 
 The challenge here was the read. The input consists of groups of single integer lines separated by a blank line. We are to add up the integers in each group and record the sum. Which ever sum is the greatest is the answer to part 1. Part 2 just takes the sum of the top 3.
