@@ -4,7 +4,12 @@
 
 #include <cgs/cgs.h>
 
-enum Magic { DELIM = ' ', BIG_SIZE = 100000, };
+enum Magic {
+        DELIM = ' ',
+        BIG_SIZE = 100000,
+        MAX_SIZE = 70000000,
+        MIN_FREE = 30000000,
+};
 
 const char* ROOT = "/";
 const char* PARENT = "..";
@@ -85,6 +90,18 @@ dir_add_file(struct File* dir, const struct cgs_vector* subs)
 error_cleanup:
         free(name);
         return NULL;
+}
+
+static void
+file_free(void* p)
+{
+        struct File* f = p;
+        if (f->type == TYPE_FILE)
+                return;
+        struct cgs_vector* v = &f->data.dir.files;
+        for (size_t i = 0; i < cgs_vector_length(v); ++i)
+                file_free(cgs_vector_get_mut(v, i));
+        cgs_vector_free(v);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -197,6 +214,38 @@ get_sum_of_small_dirs(const struct File* dir)
         return sum;
 }
 
+static void*
+get_bigger_sizes(const struct File* dir, int target, struct cgs_vector* v)
+{
+        const struct cgs_vector* files = &dir->data.dir.files;
+        for (size_t i = 0; i < cgs_vector_length(files); ++i) {
+                const struct File* file = cgs_vector_get(files, i);
+                if (file->type == TYPE_FILE)    // skip regular files
+                        continue;
+                int size = file->data.dir.size;
+                if (size < target)              // if this size is too small
+                        continue;               // then children are too small
+                if (!cgs_vector_push(v, &size))
+                        return NULL;
+                if (!get_bigger_sizes(file, target, v))
+                        return NULL;
+        }
+        return v;
+}
+
+static int
+find_best_fit_to_delete(const struct File* root)
+{
+        int target = root->data.dir.size - (MAX_SIZE - MIN_FREE);
+        struct cgs_vector sizes = cgs_vector_new(sizeof(int));
+        if (!get_bigger_sizes(root, target, &sizes))
+                return -1;
+        cgs_vector_sort(&sizes, cgs_int_cmp);
+        int ret = *(const int*)cgs_vector_get(&sizes, 0);
+        cgs_vector_free(&sizes);
+        return ret;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 int main(void)
@@ -208,5 +257,9 @@ int main(void)
         int part1 = get_sum_of_small_dirs(&root);
         printf("%d\n", part1);
 
+        int part2 = find_best_fit_to_delete(&root);
+        printf("%d\n", part2);
+
+        file_free(&root);
         return EXIT_SUCCESS;
 }
