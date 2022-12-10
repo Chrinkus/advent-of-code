@@ -18,6 +18,8 @@ const char* CHANGE = "cd";
 const char* LIST = "ls";
 const char* DIRECTORY = "dir";
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
 enum Type { TYPE_DIR, TYPE_FILE };
 
 struct DirData {
@@ -72,7 +74,7 @@ dir_add_file(struct File* dir, const struct cgs_vector* subs)
 
         char* name = cgs_strsub_to_str(ss1);
         if (!name)
-                return NULL;
+                return cgs_error_retnull("cgs_strsub_to_str");
 
         struct File file;
         int size;
@@ -89,19 +91,18 @@ dir_add_file(struct File* dir, const struct cgs_vector* subs)
         return dir;
 error_cleanup:
         free(name);
-        return NULL;
+        return cgs_error_retnull("First arg error or vector push");
 }
 
 static void
 file_free(void* p)
 {
         struct File* f = p;
+        free(f->name);
         if (f->type == TYPE_FILE)
                 return;
         struct cgs_vector* v = &f->data.dir.files;
-        for (size_t i = 0; i < cgs_vector_length(v); ++i)
-                file_free(cgs_vector_get_mut(v, i));
-        cgs_vector_free(v);
+        cgs_vector_free_all_with(v, file_free);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -119,7 +120,7 @@ static struct File*
 change_directory(const struct cgs_strsub* ss, struct File* dir)
 {
         if (dir->type != TYPE_DIR)
-                return NULL;
+                return cgs_error_retnull("Change dir: not a directory");
         if (cgs_strsub_eq_str(ss, PARENT))
                 return dir->parent;
 
@@ -132,7 +133,7 @@ change_directory(const struct cgs_strsub* ss, struct File* dir)
         struct File* new_dir = cgs_vector_find(&dir->data.dir.files,
                         dir_pred, ss); 
         if (!new_dir)
-                return NULL;
+                return cgs_error_retnull("Could not find dir");
 
         return new_dir;
 }
@@ -148,7 +149,7 @@ parse_command(const struct cgs_vector* subs, struct File* dir)
         if (cgs_strsub_eq_str(ss1, LIST)) {
                 return dir;
         }
-        return NULL;
+        return cgs_error_retnull("Unknown command");
 }
 
 static struct File*
@@ -168,7 +169,7 @@ read_and_build_tree(struct File* curr)
         struct cgs_vector subs = cgs_vector_new(sizeof(struct cgs_strsub));
         while (cgs_io_getline(stdin, &buff) > 0) {
                 if (!cgs_string_split(&buff, DELIM, &subs))
-                        return NULL;
+                        return cgs_error_retnull("cgs_string_split");
                 curr = parse_line(&subs, curr);
                 cgs_string_clear(&buff);
                 cgs_vector_clear(&subs);
@@ -190,7 +191,7 @@ set_dir_sizes(struct File* dir)
                 else if (file->type == TYPE_DIR)
                         sum += set_dir_sizes(file);
                 else
-                        printf("File type error\n");
+                        cgs_error_msg("File type error: %d", file->type);
         }
         dir->data.dir.size = sum;
         return sum;
@@ -226,9 +227,9 @@ get_bigger_sizes(const struct File* dir, int target, struct cgs_vector* v)
                 if (size < target)              // if this size is too small
                         continue;               // then children are too small
                 if (!cgs_vector_push(v, &size))
-                        return NULL;
+                        return cgs_error_retnull("cgs_vector_push");
                 if (!get_bigger_sizes(file, target, v))
-                        return NULL;
+                        return cgs_error_retnull("get_bigger_sizes");
         }
         return v;
 }

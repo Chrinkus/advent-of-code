@@ -76,3 +76,17 @@ What a delightful challenge! I used a ring-y buffer for my last n-characters and
 ### Library Notes
 
 No libary usage today.
+
+## Day 7 - No Space Left On Device
+
+I have a feeling Mr Wastl has an Apple Watch..
+
+### Challenge Notes
+
+What an exciting problem set! Parsing Linux-like command line output and mapping a directory tree! This was super fun and the only problem I had was a lack of time due to a busy work and family week.
+
+### Library Notes
+
+I needed to write a `_strsub_to_int` function for int parsing. It was a fun challenge and I look forward to improving it to make it resilient to overflow. In general, the `strsub` implementation was very useful.
+
+I write a lot of for-loops that I hoped to replace with my `vector_foreach` but they're all part of recursive functions and require more than a single 'user-data' member.
