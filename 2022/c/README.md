@@ -90,3 +90,19 @@ What an exciting problem set! Parsing Linux-like command line output and mapping
 I needed to write a `_strsub_to_int` function for int parsing. It was a fun challenge and I look forward to improving it to make it resilient to overflow. In general, the `strsub` implementation was very useful.
 
 I write a lot of for-loops that I hoped to replace with my `vector_foreach` but they're all part of recursive functions and require more than a single 'user-data' member.
+
+## Day 8 - Treetop Tree House
+
+### Challenge Notes
+
+This was a nice return to 2D map-based problems. I have two overly-long functions that process the views and scores in the four cardinal directions. They're straight-forward enough but contain a lot of almost repetitive code. I'm not sure of how to abstract the minor changes between up, down, left and right loops into a smaller format so they stay as written.
+
+Most of the time was spent on library stuff..
+
+### Library Notes
+
+A 2D problem heralded the return of my Fruity library. I haven't used it in a while and spent a bit of time bringing the API up to my current standard of usability. There are a few changes I still plan to make but for now it was fun to get back into it.
+
+My questionable decision making in designing early parts of libcgs came up again, this time with the `cgs_io_readlines` function. For whatever reason, when designing it I decided to try to store the lines as `char*`'s. I even acknowledged the problems associated with iterating through a vector of `*(char**)`'s but the best solution I found was to hide the hideousness behind typedef's.
+
+Now its suddenly so clear that I should have just used `cgs_string`'s. This change exposed a bug in my `cgs_string_copy` code so the decision to change was a two-fer!

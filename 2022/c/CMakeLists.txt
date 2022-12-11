@@ -7,6 +7,7 @@ set(CMAKE_C_STANDARD_REQUIRED YES)
 
 # Support Library
 find_package(cgs REQUIRED)
+find_package(fruity REQUIRED)
 
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
@@ -48,10 +49,11 @@ set(solutions
         "2205.c"
         "2206.c"
         "2207.c"
+        "2208.c"
 )
 
 foreach(file IN LISTS solutions)
         get_filename_component(exe "${file}" NAME_WE)
         add_executable("${exe}" "${file}")
-        target_link_libraries("${exe}" cgs)
+        target_link_libraries("${exe}" cgs fruity)
 endforeach()
