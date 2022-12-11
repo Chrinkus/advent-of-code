@@ -1,6 +1,6 @@
 # The C Journal
 
-This year I will be utilizing my general-purpose library [libcgs](https://github.com/Chrinkus/libcgs/tree/v0.5). With that dependency installed all that is needed to build these solutions is the following:
+This year I will be utilizing my general-purpose libraries [libcgs](https://github.com/Chrinkus/libcgs/tree/v0.5) and [fruity](https://github.com/Chrinkus/fruity.git). CMake will take care of those dependencies when you run the following commands:
 
 ```
 $ mkdir build
