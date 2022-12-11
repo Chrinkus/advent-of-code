@@ -9,7 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED YES)
 include(FetchContent)
 FetchContent_Declare(cgs
         GIT_REPOSITORY  https://github.com/Chrinkus/libcgs.git
-        GIT_TAG         826d650
+        GIT_TAG         1cad0ea
 )
 FetchContent_Declare(fruity
         GIT_REPOSITORY  https://github.com/Chrinkus/fruity.git
@@ -57,6 +57,7 @@ set(solutions
         "2206.c"
         "2207.c"
         "2208.c"
+        "2209.c"
 )
 
 foreach(file IN LISTS solutions)
