@@ -9,11 +9,11 @@ set(CMAKE_C_STANDARD_REQUIRED YES)
 include(FetchContent)
 FetchContent_Declare(cgs
         GIT_REPOSITORY  https://github.com/Chrinkus/libcgs.git
-        GIT_TAG         1cad0ea
+        GIT_TAG         main
 )
 FetchContent_Declare(fruity
         GIT_REPOSITORY  https://github.com/Chrinkus/fruity.git
-        GIT_TAG         505b15b
+        GIT_TAG         main
 )
 FetchContent_MakeAvailable(cgs fruity)
 

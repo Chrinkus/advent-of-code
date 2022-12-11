@@ -106,3 +106,19 @@ A 2D problem heralded the return of my Fruity library. I haven't used it in a wh
 My questionable decision making in designing early parts of libcgs came up again, this time with the `cgs_io_readlines` function. For whatever reason, when designing it I decided to try to store the lines as `char*`'s. I even acknowledged the problems associated with iterating through a vector of `*(char**)`'s but the best solution I found was to hide the hideousness behind typedef's.
 
 Now its suddenly so clear that I should have just used `cgs_string`'s. This change exposed a bug in my `cgs_string_copy` code so the decision to change was a two-fer!
+
+## Day 9 - Rope Bridge
+
+### Challenge Notes
+
+Aaarrrgghh.. an infinite grid problem. Definitely read the challenge and went to bed. I just don't yet have an elegant approach to solving these. Hash table of points? Set of points? I should probably try both and see what feels best. My gut tells me to use a set so the closes thing I have so far are my trees.
+
+Also, points! For whatever reason I keep writing my point struct implementations in the solutions. I need to put them into my library but I never feel like I understand enough about the problem domain to do a good job abstracting a general point class.
+
+Anyway, after much fussing I got part 1 done only to find that I had not made my code flexible enough to accept multi-knot ropes as input. The re-design was much quicker than I expected though and it worked almost immediately.
+
+### Library Notes
+
+The BIGGEST change today is that I figured out how to do dependency resolution with CMake and its so. darn. easy! Now anyone who wants to compile my code can do so much easier thanks to `FetchContent`.
+
+I just mentioned not feeling confident enough in my domain knowledge to implement a general point class but that didn't seem to stop me when I wrote my binary-search tree. This thing is OLD and needs a facelift. I did some tweaks in place but I'll need to come back and give it some love later.
