@@ -5,9 +5,17 @@ project(aoc-2022 VERSION 0.1 LANGUAGES C)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED YES)
 
-# Support Library
-find_package(cgs REQUIRED)
-find_package(fruity REQUIRED)
+# Support Libraries
+include(FetchContent)
+FetchContent_Declare(cgs
+        GIT_REPOSITORY  https://github.com/Chrinkus/libcgs.git
+        GIT_TAG         826d650
+)
+FetchContent_Declare(fruity
+        GIT_REPOSITORY  https://github.com/Chrinkus/fruity.git
+        GIT_TAG         505b15b
+)
+FetchContent_MakeAvailable(cgs fruity)
 
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
@@ -38,7 +46,6 @@ set(CMAKE_EXE_LINKER_FLAGS_PROFILE      "-pg" CACHE STRING "" FORCE)
 
 # General compilation flags
 add_compile_options(-Wall -Wextra -Werror)
-link_directories(${CMAKE_INSTALL_PREFIX}/lib64)
 
 # Solution processing
 set(solutions
