@@ -80,28 +80,6 @@ is_curr_touching_prev(const struct Point* prev, const struct Point* curr)
         return 0;
 }
 
-/*
-static void*
-read_and_move_rope(struct Rope* rope, struct cgs_bst* map)
-{
-        struct cgs_variant v = { 0 };
-        cgs_variant_set_data(&v, rope_copy_tail(rope));
-        cgs_bst_insert(map, &v);
-
-        for (int dir = 0, n = 0; scanf("%c %d ", (char*)&dir, &n) == 2; ) {
-                while (n--) {
-                        rope_move_head(rope, dir);
-                        if (!rope_is_tail_touching(rope)) {
-                                rope_move_tail(rope);
-                                cgs_variant_set_data(&v, rope_copy_tail(rope));
-                                cgs_bst_insert(map, &v);
-                        }
-                }
-        }
-        return map;
-}
-*/
-
 static void
 move_mid(struct Point* rope, int len)
 {
@@ -146,6 +124,7 @@ int main(void)
         if (!read_input(&input))
                 return cgs_error_retfail("read_input");
 
+        // Part 1
         struct Point shorty[SHORTLEN] = { 0 };
         struct cgs_bst short_map = { 0 };
         cgs_bst_new(&short_map, point_cmp);
@@ -156,6 +135,7 @@ int main(void)
         int part1 = cgs_bst_length(&short_map);
         printf("%d\n", part1);
 
+        // Part 2
         struct Point longer[LONGLEN] = { 0 };
         struct cgs_bst long_map = { 0 };
         cgs_bst_new(&long_map, point_cmp);
