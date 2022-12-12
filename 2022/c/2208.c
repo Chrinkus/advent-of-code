@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <cgs/cgs.h>
-#include <fruity.h>
+#include "cgs.h"
+#include "fruity.h"
 
 struct Tree {
         int height;

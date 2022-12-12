@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <cgs/cgs.h>
+#include "cgs.h"
 
 enum Magic {
         DELIM = ' ',

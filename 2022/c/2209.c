@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <cgs/cgs.h>
+#include "cgs.h"
 
 enum magic { SHORTLEN = 2, LONGLEN = 10 };
 

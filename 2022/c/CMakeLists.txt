@@ -17,6 +17,11 @@ FetchContent_Declare(fruity
 )
 FetchContent_MakeAvailable(cgs fruity)
 
+#include_directories(
+#        "${PROJECT_BINARY_DIR}/_deps/cgs-src/src"
+#        "${PROJECT_BINARY_DIR}/_deps/fruity-src/src"
+#)
+
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
 get_property(isMultiConfig GLOBAL
@@ -58,6 +63,7 @@ set(solutions
         "2207.c"
         "2208.c"
         "2209.c"
+        "2210.c"
 )
 
 foreach(file IN LISTS solutions)

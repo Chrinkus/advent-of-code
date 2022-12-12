@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include <cgs/cgs.h>
+#include "cgs.h"
 
 enum magic { START = 1, STRIDE = 4 };
 

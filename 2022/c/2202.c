@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <cgs/cgs.h>
+#include "cgs.h"
 
 enum scores { ROCK = 1, PAPER = 2, SCISSORS = 3, WIN = 6, LOSE = 0, DRAW = 3 };
 enum choice {

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <cgs/cgs.h>
+#include "cgs.h"
 
 void*
 read_elf_calories(struct cgs_vector* v)
