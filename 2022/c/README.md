@@ -122,3 +122,17 @@ Anyway, after much fussing I got part 1 done only to find that I had not made my
 The BIGGEST change today is that I figured out how to do dependency resolution with CMake and its so. darn. easy! Now anyone who wants to compile my code can do so much easier thanks to `FetchContent`.
 
 I just mentioned not feeling confident enough in my domain knowledge to implement a general point class but that didn't seem to stop me when I wrote my binary-search tree. This thing is OLD and needs a facelift. I did some tweaks in place but I'll need to come back and give it some love later.
+
+## Day 10 - Cathode-Ray Tube
+
+### Challenge Notes
+
+Time to write a graphics driver for our "handheld device". I was aware that the 'X' variable was starting on 1 but I got tripped up for a bit by the cycle count also starting on 1. Maybe it was clearer for others in the instructions but that got me. It didn't help that all of my "interesting signals" were accurate with the test data except for the last one.
+
+Part 2 was classic AoC. Again, off by one was the name of the game though I just stared at the problem until it made sense to just subtract 1 from the cycles and leave X as is.
+
+### Library Notes
+
+I had some issues with my build system after the changes for the previous day. I thought I had it all figured out but my include path was messed up. I was still reading the include files that were installed on my machine as opposed to the ones in my build directory. The CMake discourse was quick and helpful for figuring out the fix!
+
+I got to use fruity again but more as a display library. Again, it could be stream-lined a bit but for now the goal is catching up!
