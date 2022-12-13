@@ -72,30 +72,40 @@ init_new_path(const Fruity2D* map, Fruity2D* path)
 }
 
 static void*
-trace_path(/*const*/ Fruity2D* map, struct cgs_heap* q, Fruity2D* path)
+queue_next_steps(/*const*/ Fruity2D* map, struct cgs_heap* q, struct Step* s)
 {
         Fruity2DCell adj[4] = { { 0 } };
+        const int n = fruity_adjacent_4(map, s->pt.y, s->pt.x, adj);
 
-        for (struct Step s; cgs_heap_pop(q, &s); ) {
-                const int n = fruity_adjacent_4(map, s.pt.y, s.pt.x, adj);
-                for (int i = 0; i < n; ++i) {
-                        char* pc = adj[i].ptr;
-                        int* sq = fruity_get_mut(path, adj[i].row, adj[i].col);
-
-                        if (*pc - s.ch <= 1 && *sq > s.count) {
-                                *sq = s.count;
-                                struct Step next = {
-                                        .pt = {
-                                                .x = adj[i].col,
-                                                .y = adj[i].row,
-                                        },
-                                        .count = s.count + 1,
-                                        .ch = *pc,
-                                };
-                                if (!cgs_heap_push(q, &next))
-                                        return cgs_error_retnull("heap_push");
-                        }
+        for (int i = 0; i < n; ++i) {
+                char* pc = adj[i].ptr;
+                if (*pc - s->ch <= 1) {
+                        struct Step next = {
+                                .pt = { .x = adj[i].col, .y = adj[i].row },
+                                .count = s->count + 1,
+                                .ch = *pc,
+                        };
+                        if (!cgs_heap_push(q, &next))
+                                return cgs_error_retnull("heap_push");
                 }
+        }
+        return q;
+}
+
+static void*
+trace_path(/*const*/ Fruity2D* map, struct cgs_heap* q, Fruity2D* path)
+{
+        for (struct Step s; cgs_heap_pop(q, &s); ) {
+                // Mark path
+                int* sq = fruity_get_mut(path, s.pt.y, s.pt.x);
+                if (*sq > s.count)
+                        *sq = s.count;
+                else
+                        continue;       // already a shorter path going through
+
+                // Queue new Steps
+                if (!queue_next_steps(map, q, &s))
+                        return cgs_error_retnull("queue_next_steps");
         }
         return q;
 }
@@ -108,7 +118,7 @@ setup_queue_and_run(/*const*/ Fruity2D* map, const struct Point* start,
         if (!cgs_heap_new(&pq, sizeof(struct Step), step_cmp))
                 return cgs_error_retnull("cgs_heap_new");
 
-        struct Step s1 = { .pt = *start, .count = 1, .ch = 'a', };
+        struct Step s1 = { .pt = *start, .count = 0, .ch = 'a', };
         if (!cgs_heap_push(&pq, &s1)) {
                 cgs_error_msg("heap_push");
                 goto error_cleanup;
