@@ -42,10 +42,10 @@ read_and_map_elevations(Fruity2D* map, struct Point* start, struct Point* end)
         const size_t rows = cgs_vector_length(&lines);
         const size_t cols = cgs_string_length(cgs_vector_get(&lines, 0));
 
-        if (!fruity_new(map, rows, cols, sizeof(struct Square)))
+        if (!fruity_new(map, rows, cols, sizeof(char)))
                 return cgs_error_retnull("fruity_new");
 
-        struct Square** data = fruity_data_mut(map);
+        char** data = fruity_data_mut(map);
         for (size_t i = 0; i < rows; ++i) {
                 const struct cgs_string* s = cgs_vector_get(&lines, i);
                 for (size_t j = 0; j < cols; ++j) {
@@ -57,10 +57,7 @@ read_and_map_elevations(Fruity2D* map, struct Point* start, struct Point* end)
                                 *end = (struct Point){ j, i };
                                 ch = 'z';
                         }
-                        data[i][j] = (struct Square){
-                                .ch = ch,
-                                .count = DEFAULT,
-                        };
+                        data[i][j] = ch;
                 }
         }
         cgs_vector_free_all_with(&lines, cgs_string_free);
@@ -68,23 +65,37 @@ read_and_map_elevations(Fruity2D* map, struct Point* start, struct Point* end)
 }
 
 static void*
-trace_path(struct cgs_heap* q, Fruity2D* map)
+init_new_path(const Fruity2D* map, Fruity2D* path)
+{
+        if (!fruity_new(path, fruity_rows(map), fruity_cols(map), sizeof(int)))
+                return cgs_error_retnull("fruity_new");
+
+        int n = DEFAULT;
+        fruity_init(path, &n);
+
+        return path;
+}
+
+static void*
+trace_path(/*const*/ Fruity2D* map, struct cgs_heap* q, Fruity2D* path)
 {
         Fruity2DCell adj[4] = { { 0 } };
 
         for (struct Step s; cgs_heap_pop(q, &s); ) {
                 const int n = fruity_adjacent_4(map, s.pt.y, s.pt.x, adj);
                 for (int i = 0; i < n; ++i) {
-                        struct Square* sq = adj[i].ptr;
-                        if (sq->ch - s.ch <= 1 && sq->count > s.count) {
-                                sq->count = s.count;
+                        char* pc = adj[i].ptr;
+                        int* sq = fruity_get_mut(path, adj[i].row, adj[i].col);
+
+                        if (*pc - s.ch <= 1 && *sq > s.count) {
+                                *sq = s.count;
                                 struct Step next = {
                                         .pt = {
                                                 .x = adj[i].col,
                                                 .y = adj[i].row,
                                         },
                                         .count = s.count + 1,
-                                        .ch = sq->ch,
+                                        .ch = *pc,
                                 };
                                 if (!cgs_heap_push(q, &next))
                                         return cgs_error_retnull("heap_push");
@@ -95,7 +106,8 @@ trace_path(struct cgs_heap* q, Fruity2D* map)
 }
 
 static void*
-setup_queue_and_run(Fruity2D* map, const struct Point* start)
+setup_queue_and_run(/*const*/ Fruity2D* map, const struct Point* start,
+                Fruity2D* path)
 {
         struct cgs_heap pq = { 0 };
         if (!cgs_heap_new(&pq, sizeof(struct Step), step_cmp))
@@ -107,13 +119,13 @@ setup_queue_and_run(Fruity2D* map, const struct Point* start)
                 goto error_cleanup;
         }
 
-        if (!trace_path(&pq, map)) {
+        if (!trace_path(map, &pq, path)) {
                 cgs_error_msg("trace_path");
                 goto error_cleanup;
         }
 
         cgs_heap_free(&pq);
-        return map;
+        return path;
 
 error_cleanup:
         cgs_heap_free(&pq);
@@ -121,10 +133,10 @@ error_cleanup:
 }
 
 static int
-get_shortest_path_count(const Fruity2D* map, const struct Point* end)
+get_shortest_path_count(const Fruity2D* path, const struct Point* end)
 {
-        const struct Square* peak = fruity_get(map, end->y, end->x);
-        return peak->count;
+        const int* peak = fruity_get(path, end->y, end->x);
+        return *peak;
 }
 
 int main(void)
@@ -135,10 +147,14 @@ int main(void)
         if (!read_and_map_elevations(&map, &start, &end))
                 return cgs_error_retfail("read_and_map_elevations");
 
-        if (!setup_queue_and_run(&map, &start))
+        Fruity2D path = { 0 };
+        if (!init_new_path(&map, &path))
+                return cgs_error_retfail("init_new_path");
+
+        if (!setup_queue_and_run(&map, &start, &path))
                 return cgs_error_retfail("setup_queue_and run");
 
-        int part1 = get_shortest_path_count(&map, &end);
+        int part1 = get_shortest_path_count(&path, &end);
         printf("%d\n", part1);
         int part2 = 0;
         printf("%d\n", part2);
