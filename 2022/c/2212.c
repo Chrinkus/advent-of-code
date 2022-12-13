@@ -151,24 +151,29 @@ get_shortest_hike(/*const*/ Fruity2D* map, const struct Point* end)
         int min = DEFAULT;
         struct cgs_vector starts = cgs_vector_new(sizeof(struct Point));
         fruity_foreach(map, NULL, NULL, push_if_a, &starts);
+
+        Fruity2D path = { 0 };
+        if (!fruity_new(&path, fruity_rows(map), fruity_cols(map),
+                                sizeof(int))) {
+                cgs_error_msg("fruity_new");
+                goto vector_cleanup;
+        }
         for (size_t i = 0; i < cgs_vector_length(&starts); ++i) {
                 const struct Point* pt = cgs_vector_get(&starts, i);
-                Fruity2D path = { 0 };
-                if (!init_new_path(map, &path)) {
-                        cgs_error_msg("init_new_path");
-                        goto error_cleanup;
-                }
+                fruity_init(&path, &min);
                 if (!setup_queue_and_run(map, pt, &path)) {
                         cgs_error_msg("setup_queue_and_run");
                         goto error_cleanup;
                 }
                 int count = get_shortest_path_count(&path, end);
                 min = CGS_MIN(count, min);
-                fruity_free(&path);
         }
+        fruity_free(&path);
         cgs_vector_free(&starts);
         return min;
 error_cleanup:
+        fruity_free(&path);
+vector_cleanup:
         cgs_vector_free(&starts);
         return -1;
 }
