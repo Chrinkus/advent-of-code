@@ -150,3 +150,21 @@ The "keeping your worry levels manageable" hint was all I needed. When printing 
 ### Library Notes
 
 The BIGGEST challenge today was performing a deep copy so that I had two sets of monkeys to run the different parts against. My hastily-written implementation was buggy, I forgot to set `element_size` before pushing. So I jumped over to the lib and started adding the real functionality with tests. Coming back to the challenge I deleted a bunch of cobble-code and used my new `vector_copy_with` function to great success!
+
+## Day 12 - Hill Climbing Algorithm
+
+### Challenge Notes
+
+Pathfinding. Not one of my strengths but by now IT REALLY SHOULD BE. Sorry, it's late. I'm not sure where my approach falls on the BFS > Dijkstra > A* continuum of pathfinding algorithms but here's what I did.
+
+I made a map of the hill then generated a path-map of all `INT_MAX`'s. I threw my start point into a priority queue then processed steps as long as there was an element in the queue. I think that's Dijkstra.
+
+For part 2 I created a vector of start points and ran part 1 that many times to find the shortest path.
+
+The big news here is that I'm caught up! Day 12 was finished only a few minutes after day 13 dropped so I'm ready to get started on tomorrow.. tomorrow!
+
+### Library Notes
+
+So that heap I mentioned was part of my big algorithm binge last winter. It seems to work alright for this task. Fruity also comes into play with it's `adjacent_4` function which smartly grabs any available adjacent squares and ignores edges.
+
+I need to work a little more on the API and try to stuff some of the solution code into a library call but the day is done so I'm happy for now. Maybe when another pathfinder pops up I'll have a better idea of where the needless repetition lies.

@@ -7,11 +7,6 @@
 
 enum magic { START = 'S', END = 'E', DEFAULT = INT_MAX, };
 
-struct Square {
-        char ch;
-        int count;
-};
-
 struct Point {
         size_t x;
         size_t y;
@@ -139,6 +134,45 @@ get_shortest_path_count(const Fruity2D* path, const struct Point* end)
         return *peak;
 }
 
+static void
+push_if_a(Fruity2DCell cell, void* data)
+{
+        const char* pc = cell.ptr;
+        struct cgs_vector* starts = data;
+        if (*pc == 'a') {
+                struct Point pt = { .x = cell.col, .y = cell.row };
+                cgs_vector_push(starts, &pt);
+        }
+}
+
+static int
+get_shortest_hike(/*const*/ Fruity2D* map, const struct Point* end)
+{
+        int min = DEFAULT;
+        struct cgs_vector starts = cgs_vector_new(sizeof(struct Point));
+        fruity_foreach(map, NULL, NULL, push_if_a, &starts);
+        for (size_t i = 0; i < cgs_vector_length(&starts); ++i) {
+                const struct Point* pt = cgs_vector_get(&starts, i);
+                Fruity2D path = { 0 };
+                if (!init_new_path(map, &path)) {
+                        cgs_error_msg("init_new_path");
+                        goto error_cleanup;
+                }
+                if (!setup_queue_and_run(map, pt, &path)) {
+                        cgs_error_msg("setup_queue_and_run");
+                        goto error_cleanup;
+                }
+                int count = get_shortest_path_count(&path, end);
+                min = CGS_MIN(count, min);
+                fruity_free(&path);
+        }
+        cgs_vector_free(&starts);
+        return min;
+error_cleanup:
+        cgs_vector_free(&starts);
+        return -1;
+}
+
 int main(void)
 {
         Fruity2D map = { 0 };
@@ -156,9 +190,10 @@ int main(void)
 
         int part1 = get_shortest_path_count(&path, &end);
         printf("%d\n", part1);
-        int part2 = 0;
+        int part2 = get_shortest_hike(&map, &end);
         printf("%d\n", part2);
 
         fruity_free(&map);
+        fruity_free(&path);
         return EXIT_SUCCESS;
 }
