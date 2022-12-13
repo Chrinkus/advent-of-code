@@ -1,16 +1,25 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "cgs.h"
 
-typedef int Int;
+typedef int64_t Int;
 
-enum magic { SELF = -1, RELIEF = 3, PART1_ROUNDS = 20, };
+enum magic {
+        SELF = -1,
+        RELIEF = 3,
+        PART1_ROUNDS = 20,
+        PART2_ROUNDS = 10000,
+};
+
 const char* old = "old";
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 struct Operation {
         char tok;
-        Int n;
+        int n;
 };
 
 struct Monkey {
@@ -22,25 +31,6 @@ struct Monkey {
         size_t f;
         Int inspect_count;
 };
-
-/*
-static void
-monkey_print(const struct Monkey* m)
-{
-        printf("Monkey %zu\n", m->id);
-        printf("\tHolding: ");
-        for (size_t i = 0; i < cgs_vector_length(&m->items); ++i) {
-                const Int* item = cgs_vector_get(&m->items, i);
-                printf("%d, ", *item);
-        }
-        printf("\n");
-        printf("\tOperation: %c %d\n", m->op.tok, m->op.n);
-        printf("\tTest: %d\n", m->test);
-        printf("\tTrue: %zu\n", m->t);
-        printf("\tFalse: %zu\n", m->f);
-        printf("\tCount: %d\n", m->inspect_count);
-}
-*/
 
 static struct Monkey
 monkey_new(void)
@@ -56,12 +46,32 @@ monkey_new(void)
         };
 }
 
+static void*
+monkey_copy(const void* src, void* dst)
+{
+        const struct Monkey* m1 = src;
+        struct Monkey* m2 = dst;
+
+        if (!cgs_vector_copy(&m1->items, &m2->items))
+                return cgs_error_retnull("vector_copy");
+
+        m2->id = m1->id;
+        m2->op = m1->op;
+        m2->test = m1->test;
+        m2->t = m1->t;
+        m2->f = m1->f;
+        m2->inspect_count = m1->inspect_count;
+        return m2;
+}
+
 static void
 monkey_free(void* p)
 {
         struct Monkey* m = p;
         cgs_vector_free(&m->items);
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 static void*
 parse_starting_items(const struct cgs_string* s, struct Monkey* m)
@@ -70,10 +80,11 @@ parse_starting_items(const struct cgs_string* s, struct Monkey* m)
         if (!cgs_string_split(s, ' ', &subs))
                 return cgs_error_retnull("string_split");
         for (size_t i = 2; i < cgs_vector_length(&subs); ++i) {
-                Int x = 0;
+                int x = 0;
                 if (!cgs_strsub_to_int(cgs_vector_get(&subs, i), &x))
                         return cgs_error_retnull("strsub_to_int");
-                if (!cgs_vector_push(&m->items, &x))
+                Int xx = x;
+                if (!cgs_vector_push(&m->items, &xx))
                         return cgs_error_retnull("vector_push");
         }
 
@@ -105,7 +116,7 @@ parse_operation(const struct cgs_string* s, struct Monkey* m)
 }
 
 static void*
-read_monkeys(struct cgs_vector* vm)
+read_monkeys(struct cgs_vector* vm, Int* lcm)
 {
         struct cgs_string buff = cgs_string_new();
         while (!feof(stdin)) {
@@ -127,6 +138,8 @@ read_monkeys(struct cgs_vector* vm)
 
                 if (scanf(" Test: divisible by %d ", &m.test) != 1)
                         return cgs_error_retnull("scanf: Test");
+                *lcm *= m.test;
+
                 if (scanf(" If true: throw to monkey %zu ", &m.t) != 1)
                         return cgs_error_retnull("scanf: true");
                 if (scanf(" If false: throw to monkey %zu ", &m.f) != 1)
@@ -141,26 +154,28 @@ read_monkeys(struct cgs_vector* vm)
 }
 
 static Int
-perform_operation(Int item, struct Operation* op)
+perform_operation(Int item, struct Operation* op, const Int lcm)
 {
         Int n = op->n == SELF ? item : op->n;
         switch (op->tok) {
-        case '*':       return item * n;
-        case '+':       return item + n;
+        case '*':       item *= n;      break;
+        case '+':       item += n;      break;
         default:
                 cgs_error_msg("Unknown token %c", op->tok);
                 return 0;
         }
+        return lcm == 0 ? item : item % lcm;
 }
 
 static void*
-take_turn(struct Monkey* m, struct cgs_vector* vm)
+take_turn(struct Monkey* m, struct cgs_vector* vm, const Int lcm)
 {
         for (size_t i = 0; i < cgs_vector_length(&m->items); ++i) {
                 Int item = *(Int*)cgs_vector_get_mut(&m->items, i);
                 m->inspect_count += 1;
-                item = perform_operation(item, &m->op);
-                item /= RELIEF;
+                item = perform_operation(item, &m->op, lcm);
+                if (lcm == 0)
+                        item /= RELIEF;
 
                 struct Monkey* p = NULL;
                 if (item % m->test == 0)
@@ -175,24 +190,16 @@ take_turn(struct Monkey* m, struct cgs_vector* vm)
 }
 
 static void*
-monkey_around(struct cgs_vector* vm, const int rounds)
+monkey_around(struct cgs_vector* vm, const int rounds, const Int lcm)
 {
         for (int i = 0; i < rounds; ++i) {
                 for (size_t j = 0; j < cgs_vector_length(vm); ++j) {
                         struct Monkey* m = cgs_vector_get_mut(vm, j);
-                        if (!take_turn(m, vm))
+                        if (!take_turn(m, vm, lcm))
                                 return cgs_error_retnull("take turn");
                 }
         }
         return vm;
-}
-
-static void
-swap_int(int* a, int* b)
-{
-        int tmp = *a;
-        *a = *b;
-        *b = tmp;
 }
 
 static Int
@@ -203,7 +210,7 @@ get_monkey_business(const struct cgs_vector* vm)
                 const struct Monkey* m = cgs_vector_get(vm, i);
                 Int count = m->inspect_count;
                 if (count > top2[0]) {
-                        swap_int(&count, &top2[0]);
+                        CGS_SWAP(count, top2[0], Int);
                 }
                 if (count > top2[1])
                         top2[1] = count;
@@ -211,31 +218,30 @@ get_monkey_business(const struct cgs_vector* vm)
         return top2[0] * top2[1];
 }
 
-/*
-static void
-print_all_monkeys(const struct cgs_vector* vm)
-{
-        for (size_t i = 0; i < cgs_vector_length(vm); ++i) {
-                const struct Monkey* m = cgs_vector_get(vm, i);
-                monkey_print(m);
-        }
-}
-*/
-
 int main(void)
 {
-        struct cgs_vector monkeys = cgs_vector_new(sizeof(struct Monkey));
-        if (!read_monkeys(&monkeys))
+        Int worry_lcm = 1;
+        struct cgs_vector monkeys1 = cgs_vector_new(sizeof(struct Monkey));
+        if (!read_monkeys(&monkeys1, &worry_lcm))
                 return cgs_error_retfail("read_monkeys");
 
-        if (!monkey_around(&monkeys, PART1_ROUNDS))
+        struct cgs_vector monkeys2 = cgs_vector_new(0);
+        if (!cgs_vector_copy_with(&monkeys1, &monkeys2, monkey_copy))
+                return cgs_error_retfail("vector_copy_with");
+
+        // Part 1
+        if (!monkey_around(&monkeys1, PART1_ROUNDS, 0))
                 return cgs_error_retfail("monkey around %d", PART1_ROUNDS);
+        Int part1 = get_monkey_business(&monkeys1);
+        printf("%"PRId64"\n", part1);
 
-        //print_all_monkeys(&monkeys);
+        // Part 2
+        if (!monkey_around(&monkeys2, PART2_ROUNDS, worry_lcm))
+                return cgs_error_retfail("monkey around %d", PART2_ROUNDS);
+        Int part2 = get_monkey_business(&monkeys2);
+        printf("%"PRId64"\n", part2);
 
-        Int part1 = get_monkey_business(&monkeys);
-        printf("%d\n", part1);
-
-        cgs_vector_free_all_with(&monkeys, monkey_free);
+        cgs_vector_free_all_with(&monkeys1, monkey_free);
+        cgs_vector_free_all_with(&monkeys2, monkey_free);
         return EXIT_SUCCESS;
 }

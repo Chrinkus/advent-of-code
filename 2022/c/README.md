@@ -136,3 +136,17 @@ Part 2 was classic AoC. Again, off by one was the name of the game though I just
 I had some issues with my build system after the changes for the previous day. I thought I had it all figured out but my include path was messed up. I was still reading the include files that were installed on my machine as opposed to the ones in my build directory. The CMake discourse was quick and helpful for figuring out the fix!
 
 I got to use fruity again but more as a display library. Again, it could be stream-lined a bit but for now the goal is catching up!
+
+## Day 11 - Monkey in the Middle
+
+### Challenge Notes
+
+Another epic read! Each monkey is 6 lines of info to parse. Thankfully there isn't much variance from monkey to monkey so scanf's and getline's got the job done. Simulating the monkey tosses was fun to construct. Part 1 was interesting!
+
+Part 2 showed up like an angler fish or some other reference to another year where bigger and bigger int-types were needed. The example indicated that the end value would be larger than `INT_MAX` so I reached for `int64_t`'s early though maybe I didn't really need them until the end.
+
+The "keeping your worry levels manageable" hint was all I needed. When printing my monkeys out at the start to prove my reads were correct, I noticed that all of their "tests" were prime numbers. The solution to keep worry low-ish was to modulo the lowest common multiple of the primes. Since they were all primes it was just a matter of multiplying them together. That number comfortably fit inside a regular 32-bit int so.. win?!
+
+### Library Notes
+
+The BIGGEST challenge today was performing a deep copy so that I had two sets of monkeys to run the different parts against. My hastily-written implementation was buggy, I forgot to set `element_size` before pushing. So I jumped over to the lib and started adding the real functionality with tests. Coming back to the challenge I deleted a bunch of cobble-code and used my new `vector_copy_with` function to great success!
