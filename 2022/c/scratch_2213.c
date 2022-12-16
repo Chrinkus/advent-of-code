@@ -15,6 +15,22 @@ struct Packet {
         } data;
 };
 
+static void
+packet_print(const struct Packet* pack)
+{
+        if (pack->type == LIST) {
+                printf("[\n");
+                const struct cgs_vector* v = &pack->data.list;
+                for (size_t i = 0; i < cgs_vector_length(v); ++i) {
+                        const struct Packet* p = cgs_vector_get(v, i);
+                        packet_print(p);
+                }
+                printf("]\n");
+        } else if (pack->type == VALUE) {
+                printf("'%d'", pack->data.value);
+        }
+}
+
 static struct Packet
 packet_new_list(struct Packet* parent)
 {
@@ -43,8 +59,8 @@ packet_list_add(struct Packet* list, struct Packet* p)
         return list;
 }
 
-static const char*
-packet_parse(const char* s, struct Packet* parent)
+static char*
+packet_parse(char* s, struct Packet* parent)
 {
         while (*s) {
                 if (*s == ',') {                // advance to next char
@@ -57,7 +73,11 @@ packet_parse(const char* s, struct Packet* parent)
                                 return cgs_error_retnull("packet_list_add");
                         s = packet_parse(++s, &p);
                 } else if (isdigit(*s)) {       // parse int, add to parent list
-                        int val = strtol(s, &s, 10);
+                        char* pc = NULL;
+                        int val = strtol(s, &pc, 10);
+                        if (pc == s)
+                                return cgs_error_retnull("strtol");
+                        s = pc;
                         struct Packet p = packet_new_value(parent, val);
                         if (!packet_list_add(parent, &p))
                                 return cgs_error_retnull("packet_list_add");
@@ -75,22 +95,29 @@ packet_free(void* packet)
 }
 
 static void*
-read_input(struct cgs_vector* input)
+read_packets(struct cgs_vector* packets)
 {
         struct cgs_string buff = cgs_string_new();
+
         while (!feof(stdin)) {
                 if (cgs_io_getline(stdin, &buff) > 0) {
-                        struct cgs_string line = cgs_string_new();
-                        cgs_string_move(&buff, &line);
-                        if (!cgs_vector_push(input, &line)) {
+                        char* s = cgs_string_data_mut(&buff);
+                        struct Packet pack = packet_new_list(NULL);
+                        if (!packet_parse(++s, &pack)) {
+                                cgs_error_msg("packet_parse");
+                                goto error_cleanup;
+                        }
+                        if (!cgs_vector_push(packets, &pack)) {
                                 cgs_error_msg("vector_push");
+                                packet_free(&pack);
                                 goto error_cleanup;
                         }
                 }
+                cgs_string_clear(&buff);
         }
 
         cgs_string_free(&buff);
-        return input;
+        return packets;
 error_cleanup:
         cgs_string_free(&buff);
         return NULL;
@@ -102,23 +129,19 @@ packet_cmp(const void* a, const void* b)
         const struct Packet* left = a;
         const struct Packet* right = b;
 
+        (void)left;
+        (void)right;
+
         return 0;
 }
 
 static int
-sum_ordered_pair_indexes(const struct cgs_vector* input)
+sum_ordered_pair_indexes(struct cgs_vector* vp)
 {
         int sum = 0;
-        for (size_t i = 0, j = 1; i < cgs_vector_length(input) - 1; i+=2, ++j) {
-                const struct cgs_string* left = cgs_vector_get(input, i);
-                struct Packet pl = packet_new_list(NULL);
-                if (!packet_parse(++cgs_string_data(left), &pl))
-                        return cgs_error_retfail("packet_parse");
-
-                const struct cgs_string* right = cgs_vector_get(input, i+1);
-                struct Packet pr = packet_new_list(NULL);
-                if (!packet_parse(++cgs_string_data(right), &pr))
-                        return cgs_error_retfail("packet_parse");
+        for (size_t i = 0, j = 1; i < cgs_vector_length(vp) - 1; i+=2, ++j) {
+                const struct Packet* pl = cgs_vector_get(vp, i);
+                const struct Packet* pr = cgs_vector_get(vp, i+1);
 
                 if (packet_cmp(&pl, &pr) < 0)
                         sum += j;
@@ -128,13 +151,16 @@ sum_ordered_pair_indexes(const struct cgs_vector* input)
 
 int main(void)
 {
-        struct cgs_vector input = cgs_vector_new(sizeof(struct cgs_string));
-        if (!read_input(&input))
+        struct cgs_vector packets = cgs_vector_new(sizeof(struct Packet));
+        if (!read_packets(&packets))
                 return cgs_error_retfail("read_input");
 
-        int part1 = sum_ordered_pair_indexes(&input);
+        const struct Packet* p = cgs_vector_get(&packets, 0);
+        packet_print(p);
+
+        int part1 = sum_ordered_pair_indexes(&packets);
         printf("%d\n", part1);
 
-        cgs_vector_free_all_with(&input, cgs_string_free);
+        cgs_vector_free_all_with(&packets, packet_free);
         return EXIT_SUCCESS;
 }
