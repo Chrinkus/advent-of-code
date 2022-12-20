@@ -126,8 +126,7 @@ int main(void)
 
         // Part 1
         struct Point shorty[SHORTLEN] = { 0 };
-        struct cgs_bst short_map = { 0 };
-        cgs_bst_new(&short_map, point_cmp);
+        struct cgs_bst short_map = cgs_bst_new(point_cmp);
 
         if (!move_rope(&input, shorty, SHORTLEN, &short_map))
                 return cgs_error_retfail("move_rope: short");
@@ -137,8 +136,7 @@ int main(void)
 
         // Part 2
         struct Point longer[LONGLEN] = { 0 };
-        struct cgs_bst long_map = { 0 };
-        cgs_bst_new(&long_map, point_cmp);
+        struct cgs_bst long_map = cgs_bst_new(point_cmp);
 
         if (!move_rope(&input, longer, LONGLEN, &long_map))
                 return cgs_error_retfail("move_rope: long");

@@ -61,7 +61,7 @@ set(solutions
         "2210.c"
         "2211.c"
         "2212.c"
-        "2213.c"
+        #"2213.c"
 )
 
 foreach(file IN LISTS solutions)
