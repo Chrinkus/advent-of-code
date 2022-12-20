@@ -114,10 +114,7 @@ static void*
 setup_queue_and_run(/*const*/ Fruity2D* map, const struct Point* start,
                 Fruity2D* path)
 {
-        struct cgs_heap pq = { 0 };
-        if (!cgs_heap_new(&pq, sizeof(struct Step), step_cmp))
-                return cgs_error_retnull("cgs_heap_new");
-
+        struct cgs_heap pq = cgs_heap_new(sizeof(struct Step), step_cmp);
         struct Step s1 = { .pt = *start, .count = 0, .ch = 'a', };
         if (!cgs_heap_push(&pq, &s1)) {
                 cgs_error_msg("heap_push");
