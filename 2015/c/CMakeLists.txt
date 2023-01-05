@@ -51,6 +51,7 @@ add_compile_options(-Wall -Wextra -Werror)
 set(solutions
         "1501.c"
         "1502.c"
+        "1503.c"
 )
 
 foreach(file IN LISTS solutions)

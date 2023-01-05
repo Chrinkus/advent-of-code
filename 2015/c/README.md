@@ -40,3 +40,19 @@ Juggling three values is always a tricky task. It seems like there should be a m
 ### Library Notes
 
 No library usage today.
+
+## Day 3 - Perfectly Spherical Houses in a Vacuum
+
+No clue what this title is in reference to..
+
+### Challenge Notes
+
+A 2D puzzle on day 3! We need to move a virtual sleigh one 'space' at a time and log its location. Then for part 2 we need to alternate moving two sleighs. This challenge is a big reason why I came back to 2015. More on that below..
+
+### Library Notes
+
+Time to dust off my new infinite 2D space data structure in my fruity library! A hashed set of points let me log each location and then query the length for total houses. It's elegant and easy! So proud of how this worked out.
+
+Big win for fruity!
+
+My original solution had me implementing a binary search tree for points. Not a bad idea but definitely a lot of code to minimally write the needed structure. It also leaked memory as I allocated a BUNCH of points but cleaned up nary a one.
