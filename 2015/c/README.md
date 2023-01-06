@@ -56,3 +56,21 @@ Time to dust off my new infinite 2D space data structure in my fruity library! A
 Big win for fruity!
 
 My original solution had me implementing a binary search tree for points. Not a bad idea but definitely a lot of code to minimally write the needed structure. It also leaked memory as I allocated a BUNCH of points but cleaned up nary a one.
+
+## Day 4 - The Ideal Stocking Stuffer
+
+A joke about crypto currency! This is aging poorly..
+
+### Challenge Notes
+
+An MD5 hash challenge! You don't see these so much in the newer events. I believe it was never Eric's intent to have people implement their own MD5 hash implementation, reading the RFA makes your head spin!
+
+This solution executes very slowly so I stopped converting my hashes to strings and just looked at the bytes. A byte equals two hex chars so I needed to isolate the first 5 and 6 chars for parts 1 and 2. An even number is easy, just divide by two. For part 1, with an odd number of zeros to find, I checked that the third byte was less than 16 to just examine the "upper" zeros.
+
+This cut the execution time by a factor of 10! I guess `sprintf`-ing all those hex chars is expensive!
+
+### Library Notes
+
+For my first attempt at this problem I used the open-ssl library that was installed on my system. It was terribly slow but it worked. This time I needed something that CMake could build locally so I took to the internet to find one!
+
+The RFA has a C implementation but I was not interested in copy-pasting that code myself. I found a repo on GitHub of someone who did though and forked it, added CMake build support, tweaked a few lines of code and had exactly what I needed!
