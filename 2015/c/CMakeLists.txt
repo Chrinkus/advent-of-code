@@ -15,7 +15,11 @@ FetchContent_Declare(fruity
         GIT_REPOSITORY  https://github.com/Chrinkus/fruity.git
         GIT_TAG         v0.4
 )
-FetchContent_MakeAvailable(cgs fruity)
+FetchContent_Declare(md5c
+        GIT_REPOSITORY  https://github.com/Chrinkus/md5-c.git
+        GIT_TAG         main
+)
+FetchContent_MakeAvailable(cgs fruity md5c)
 
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
@@ -52,6 +56,7 @@ set(solutions
         "1501.c"
         "1502.c"
         "1503.c"
+        "1504.c"
 )
 
 foreach(file IN LISTS solutions)
@@ -59,3 +64,5 @@ foreach(file IN LISTS solutions)
         add_executable("${exe}" "${file}")
         target_link_libraries("${exe}" cgs fruity)
 endforeach()
+
+target_link_libraries(1504 md5c)
