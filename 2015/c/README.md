@@ -74,3 +74,5 @@ This cut the execution time by a factor of 10! I guess `sprintf`-ing all those h
 For my first attempt at this problem I used the open-ssl library that was installed on my system. It was terribly slow but it worked. This time I needed something that CMake could build locally so I took to the internet to find one!
 
 The RFA has a C implementation but I was not interested in copy-pasting that code myself. I found a repo on GitHub of someone who did though and forked it, added CMake build support, tweaked a few lines of code and had exactly what I needed!
+
+UPDATE: I was still using `sprintf` to convert my int counter to a string for concatenation. Seeing how it slowed down the solution on the back-end I decided to implement my own `string_from_int` function. This shortened execution speed further!
