@@ -106,3 +106,25 @@ As for the differences, again I'm using integers for booleans instead of includi
 ### Library Notes
 
 Just the dynamic string and my getline functions here. Not a lot of library use but at least I didn't have to implement them in the solution file!
+
+## Day 6 - Probably a Fire Hazard
+
+### Challenge Notes
+
+Operations on ranges of 2D data. The bounds of the grids are known at compile time so I just used the regular C-arrays. Part 1 only needs bits so I used `int8_t`s. Chars also worked but I felt that a numeric type was a better fit for the purpose.
+
+The hardest part was the read. Initially I was trying to just `scanf` from input but since the input lines all started with 't' a failing call would still consume the first letter. I could get by this by having the first pattern be "toggle.." and the second be "urn.." but that was kind of janky. In the end I grabbed the lines one at a time and `sscanf`d them with full patterns for clarity.
+
+### Now vs Then
+
+I was experimenting with approaches my first time through this problem. For part 1 I used a 2D C-array and for part 2 I tried a flattened 1D array with [row * i + col] indexing. I appreciate the desire to try them both. Good job, past me!
+
+Again I wrote a custom `readline` function and even expressed the desire to "lib it out" in the comments.
+
+Rather than doing a test and dispatching an appropriate function, I just parsed the line and passed all the data to another function to dispatch the different commands. It's kind of a mess of `enum`s and `switch` statements.
+
+### Library Notes
+
+Again, the only library usage was my `io_getline` function to simplify the reads. But that's the whole point, use a library to take care of the parts that aren't the immediate problem under consideration.
+
+Though it is a 2D challenge, I decided not to use fruity as the boundaries were known at compile time so a regular 2D C-array was sufficiently easy to work with.
