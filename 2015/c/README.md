@@ -1,5 +1,13 @@
 # 2015 C Journal
 
+Each day I will try to comment on three aspects of my approach:
+
+1. **Challenge Notes** - How I approached the challenge.
+2. **Now vs Then** - I first attempted these problems two years ago when I was new to C. The code I wrote then has been moved to the `archive/` directory to track my progress.
+3. **Library Notes** - Specific parts of my support libraries that were used to complete the challenge. I'll make special note of times where changes to a support library were required to provide the appropriate functionality.
+
+## Building and Running Solutions
+
 These solutions will be utilizing CMake to resolve dependencies and build the code. From this directory enter the following:
 
 ```
@@ -76,3 +84,25 @@ For my first attempt at this problem I used the open-ssl library that was instal
 The RFA has a C implementation but I was not interested in copy-pasting that code myself. I found a repo on GitHub of someone who did though and forked it, added CMake build support, tweaked a few lines of code and had exactly what I needed!
 
 UPDATE: I was still using `sprintf` to convert my int counter to a string for concatenation. Seeing how it slowed down the solution on the back-end I decided to implement my own `string_from_int` function. This shortened execution speed further!
+
+## Day 5 - Doesn't He Have Intern-Elves For This?
+
+This title is the first hint that we are, as AoC participants, intern-elves for Santa.
+
+### Challenge Notes
+
+String validation. I'm not wild about these problems but its fun trying to read each string as few times as possible. Single-pass solutions, short-circuits to skip unnecessary reads.
+
+That's the fun stuff.
+
+For my money, part 2 is easier than part 1 in that both "conditions" can be checked with a 2nd iterator two characters along in the string.
+
+### Now vs Then
+
+It is EERIE how my switch statments are IDENTICAL to my thought process two years ago! The first condition in part 1 is kind of automatic but condition 3, right down to the TAB-ing is just my style, I guess.
+
+As for the differences, again I'm using integers for booleans instead of including `stdbool`. The pointer use is much more confident. Also I write a very hectic dynamic string reader for grabbing the input. Just reading it I can't be certain that it works correctly.
+
+### Library Notes
+
+Just the dynamic string and my getline functions here. Not a lot of library use but at least I didn't have to implement them in the solution file!
