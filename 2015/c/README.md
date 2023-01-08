@@ -128,3 +128,29 @@ Rather than doing a test and dispatching an appropriate function, I just parsed 
 Again, the only library usage was my `io_getline` function to simplify the reads. But that's the whole point, use a library to take care of the parts that aren't the immediate problem under consideration.
 
 Though it is a 2D challenge, I decided not to use fruity as the boundaries were known at compile time so a regular 2D C-array was sufficiently easy to work with.
+
+## Day 7 - Some Assembly Required
+
+You knew a toy would be cool when it had this on the box.
+
+### Challenge Notes
+
+Whuf! Simulating a bunch of wire connections with different types of logic gates. This kind of problem would be much easier in an OO language but we can make it happen with C! This challenge represents the first star that I'm picking up on return to 2015.
+
+Each line is the description of a wire, specifically the last word in the string. I was going to split the line but ended up writing a `scanf` for each 'type' of gate. After running into a wall due to some signals being passed as wires and others unexpectedly as raw integers, I decided to defer the detection of a number till later in the `get_signal` phase.
+
+Part 2 was easy, IF you engineered your part 1 to be reset and re-run. Or if your support library already had a way to iterate over the elements of a hash table.
+
+### Now vs Then
+
+In my first attempt at this I also identified a hash table as the ideal structure for the problem. Then I tried to implement it.. As a result my solution for part 1 was 321 lines of code!
+
+A mistake I made was to throw each line into a queue and process them only when there was a signal available for each parameter wire. I considered this possibility this time as well but figured that connencting the virtual wires then recursing up the line to valid signals would be better.
+
+In the end I did not complete part 2 in 2020.
+
+### Library Notes
+
+So here's a funny thing. I implemented a hash table in `libcgs` a while ago but never ended up using it in the wild. This challenge is the first road test for my data structure and, while it got the job done, I will be making adjustments.
+
+Part 1 was engineered in such a way that set up part 2 well. The only thing I needed was an iterator for the elements of a hash table. This was implemented successfully but I'll not consider the functionality finished until I review the whole hash table at a later date.
