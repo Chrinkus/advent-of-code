@@ -28,22 +28,19 @@ wire_create(void)
 
 // forward decl
 static Sig
-get_signal(struct cgs_variant* v, struct cgs_hashtab* ht);
+get_signal(struct wire* w, struct cgs_hashtab* ht);
 
 static Sig
 read_signal(const char* s, struct cgs_hashtab* ht)
 {
         return isdigit(s[0])
                 ? strtoul(s, NULL, 10)
-                : get_signal(cgs_hashtab_get(ht, s), ht);
+                : get_signal(cgs_hashtab_lookup_mut(ht, s), ht);
 }
 
 static Sig
-get_signal(struct cgs_variant* v, struct cgs_hashtab* ht)
+get_signal(struct wire* w, struct cgs_hashtab* ht)
 {
-
-        struct wire* w = cgs_variant_get_mut(v);
-
         if (w->sig)
                 return w->sig;
 
@@ -122,8 +119,7 @@ setup_part_2(struct cgs_hashtab* ht, Sig bval)
         }
 
         // Set wire "b" to bval
-        struct cgs_variant* pv = cgs_hashtab_get(ht, "b");
-        struct wire* w = cgs_variant_get_mut(pv);
+        struct wire* w = cgs_hashtab_lookup_mut(ht, "b");
         w->sig = bval;
 }
 
@@ -133,12 +129,12 @@ int main(void)
 
         read_and_build_wire_table(&wt);
 
-        Sig part1 = get_signal(cgs_hashtab_get(&wt, "a"), &wt);
+        Sig part1 = get_signal(cgs_hashtab_lookup_mut(&wt, "a"), &wt);
         printf("%hd\n", part1);
 
         setup_part_2(&wt, part1);
 
-        Sig part2 = get_signal(cgs_hashtab_get(&wt, "a"), &wt);
+        Sig part2 = get_signal(cgs_hashtab_lookup_mut(&wt, "a"), &wt);
         printf("%hd\n", part2);
 
         cgs_hashtab_free(&wt);
