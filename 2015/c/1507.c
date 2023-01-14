@@ -91,7 +91,7 @@ wire_table_add_wire(struct cgs_hashtab* wt, const char* line)
                 free(w);
                 return cgs_error_retnull("Could not add wire: %s", line);
         }
-        struct cgs_variant* v = cgs_hashtab_get(wt, id);
+        struct cgs_variant* v = cgs_hashtab_insert(wt, id, NULL);
         cgs_variant_set_data(v, w);
 
         return wt;
@@ -129,8 +129,7 @@ setup_part_2(struct cgs_hashtab* ht, Sig bval)
 
 int main(void)
 {
-        struct cgs_hashtab wt = { 0 };
-        cgs_hashtab_new(&wt);
+        struct cgs_hashtab wt = cgs_hashtab_new();
 
         read_and_build_wire_table(&wt);
 
