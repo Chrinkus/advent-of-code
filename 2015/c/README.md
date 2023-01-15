@@ -154,3 +154,25 @@ In the end I did not complete part 2 in 2020.
 So here's a funny thing. I implemented a hash table in `libcgs` a while ago but never ended up using it in the wild. This challenge is the first road test for my data structure and, while it got the job done, I will be making adjustments.
 
 Part 1 was engineered in such a way that set up part 2 well. The only thing I needed was an iterator for the elements of a hash table. This was implemented successfully but I'll not consider the functionality finished until I review the whole hash table at a later date.
+
+UPDATE: This challenge informed some changes that were made to `libcgs` to improve the hash table usage. These changes broke the API a little so this problem has been tweaked.
+
+## Day 8 - Matchsticks
+
+No clue what this title is in reference to aside from the appearance of multiple back-slashes in a row when escaping escape characters.
+
+### Challenge Notes
+
+Not gonna lie, this challenge turned me off a bit when I read it. Initially I believed I would have to create the new strings and such. As it turns out, just keeping counts going was a much easier solution. Part 2 fit right beside my part 1 counters and required minimal extra code.
+
+### Now vs Then
+
+Looks like I had the same idea back in 2020. I created a "lengths" struct and used it to keep track of extra characters. The execution was a little different, I added the full length of the source string to each type of count and performed both addition to encoding and subtraction from memory.
+
+One thing of note is my standard library usage. I call `getline` from the standard library which was still a GNU extension in C99, which is the version of C that I was compiling originally. I'm sure I would have had an issue with this on Mac or Windows.
+
+Further, I have a potential buffer overflow with my hard-coding of a 64-byte string for my line reads. Oops!
+
+### Library Notes
+
+Just a straight up `cgs_string` and `cgs_io_getline` day. Love those functions!
