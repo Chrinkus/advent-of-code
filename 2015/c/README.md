@@ -194,3 +194,21 @@ Another thing I do is have a 'length' counter that I'm adding to rather than jus
 ### Library Notes
 
 My `string` functions really shine here. I'm happy to have `push`, `clear`, and `move` implemented for use. There's a `SWAP` sighting as well!
+
+## Day 11 - Corporate Policy
+
+I love the "passwords must be exactly eight lowercase letters (for security reasons)" line.
+
+### Challenge Notes
+
+Password validation! We have three requirements to meet, one failure and two passing. Check the failure first to save needless checking. Because the password is only 8 characters I have no qualms about separating the checks into their own loops.
+
+### Now vs Then
+
+Wow! Old me found something current me forgot! I can use `strpbrk` to search a string for bytes from a string. I had remembered `strtok` for checking a string for a single character but `strpbrk` does it for strings. Way to go!
+
+Other than utilizing niche standard library functions, the techniques are very similar. I iterate right in the `do-while` loop and combine the checks for clause 1 and 3 in a single loop. I prefer my new code as its easier to reason about the separate parts.
+
+### Library Notes
+
+No library usage today!
