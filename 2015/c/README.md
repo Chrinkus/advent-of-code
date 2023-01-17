@@ -176,3 +176,21 @@ Further, I have a potential buffer overflow with my hard-coding of a 64-byte str
 ### Library Notes
 
 Just a straight up `cgs_string` and `cgs_io_getline` day. Love those functions!
+
+## Day 10 - Elves Look, Elves Say
+
+### Challenge Notes
+
+A game of life puzzle. For these I like to just run the simulation and if it starts to take too long I'll look for  a pattern to short-circuit the later iterations. The "brute force" solution runs in a few milli-seconds so I'm happy with that.
+
+Looking at the results the only thing I can pick out is that the values are all 1-3.
+
+### Now vs Then
+
+My initial approach was very similar to this most recent one. How I handle the growing "look-say" string is notable. I seem to just be re-allocating to 1.5 times the previous length every iteration. It's an arbitrary scale factor that must have *just worked*.
+
+Another thing I do is have a 'length' counter that I'm adding to rather than just reading the length of the resulting string.
+
+### Library Notes
+
+My `string` functions really shine here. I'm happy to have `push`, `clear`, and `move` implemented for use. There's a `SWAP` sighting as well!
