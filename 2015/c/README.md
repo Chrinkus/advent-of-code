@@ -177,6 +177,28 @@ Further, I have a potential buffer overflow with my hard-coding of a 64-byte str
 
 Just a straight up `cgs_string` and `cgs_io_getline` day. Love those functions!
 
+## Day 9 - All in a Single Night
+
+\<Waves hands\> MAGIC!!
+
+### Challenge Notes
+
+Here we go, a graph problem. Specifically an all-points shortest path problem. I had to do some serious reading to get a quality solution together here. Cormen et al to the rescue!
+
+Needing to visit all points had me performing Dijkstra's algorithm on each starting element and keeping a bit mask of the visited indexes. This took a bit to wrap my brain around but when I got it figured out it ran quick and gave a correct answer!
+
+Part 2 asked for a longest path so I sought to parameterize my comparison functions to reuse as much of the first example as possible. I had to spot-write some functions that should have been available in my library, this will be commented on further down.
+
+### Now vs Then
+
+There is no "then"! I didn't even attempt this problem in 2020 so here we are, striking new ground!
+
+### Library Notes
+
+I need to write a `cgs_vector_min` and corresponding `_max` function. I've needed them before but never wrote them. In this solution I use a `_foreach` so, 'yay' for library use but 'boo' for not having the best possible operation.
+
+Heaps are working out REALLY well. I may need one more path-finding problem to have a better understanding of which parts of the solutions are transferrable and which parts should be parameterized.
+
 ## Day 10 - Elves Look, Elves Say
 
 ### Challenge Notes
