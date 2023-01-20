@@ -9,7 +9,7 @@ struct char_counts {
         int encode;
 };
 
-void
+static void
 count_chars(const struct cgs_string* line, struct char_counts* cc)
 {
         cc->encode += 2;
@@ -37,7 +37,7 @@ count_chars(const struct cgs_string* line, struct char_counts* cc)
         }
 }
 
-void
+static void
 read_and_count_chars(struct char_counts* cc)
 {
         struct cgs_string line = cgs_string_new();
