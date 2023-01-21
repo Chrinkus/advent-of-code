@@ -189,6 +189,8 @@ Needing to visit all points had me performing Dijkstra's algorithm on each start
 
 Part 2 asked for a longest path so I sought to parameterize my comparison functions to reuse as much of the first example as possible. I had to spot-write some functions that should have been available in my library, this will be commented on further down.
 
+UPDATE: OMG THE READ! I had written the read when first approaching the problem again and then spent a week reading up on graph algorithms. I forgot how hefty the read was! It was not my initial plan but the idea of putting the distances into a matrix of paired weights made executing the pathfinding SO EASY. I got the idea from a [tweet](https://twitter.com/TivadarDanka/status/1612415042766663680?s=20).
+
 ### Now vs Then
 
 There is no "then"! I didn't even attempt this problem in 2020 so here we are, striking new ground!
@@ -198,6 +200,8 @@ There is no "then"! I didn't even attempt this problem in 2020 so here we are, s
 I need to write a `cgs_vector_min` and corresponding `_max` function. I've needed them before but never wrote them. In this solution I use a `_foreach` so, 'yay' for library use but 'boo' for not having the best possible operation.
 
 Heaps are working out REALLY well. I may need one more path-finding problem to have a better understanding of which parts of the solutions are transferrable and which parts should be parameterized.
+
+UPDATE: The missing `min` and `max` were added!
 
 ## Day 10 - Elves Look, Elves Say
 

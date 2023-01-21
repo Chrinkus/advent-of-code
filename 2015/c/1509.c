@@ -189,24 +189,6 @@ get_desired_path_from_index(const struct fruity_2d* data, unsigned index,
         cgs_heap_free(&queue);
 }
 
-static void
-get_min(const void* ele, size_t i, void* data)
-{
-        const int* pi = ele;
-        (void)i;
-        int* min = data;
-        *min = CGS_MIN(*pi, *min);
-}
-
-static void
-get_max(const void* ele, size_t i, void* data)
-{
-        const int* pi = ele;
-        (void)i;
-        int* max = data;
-        *max = CGS_MAX(*pi, *max);
-}
-
 static int
 shortest_path_all_points(const struct fruity_2d* data)
 {
@@ -218,8 +200,7 @@ shortest_path_all_points(const struct fruity_2d* data)
                 cgs_vector_push(&dists, &m);
         }
 
-        int min = INT_MAX;
-        cgs_vector_foreach(&dists, get_min, &min);
+        int min = *(const int*)cgs_vector_min(&dists, cgs_int_cmp);
 
         cgs_vector_free(&dists);
         return min;
@@ -236,29 +217,17 @@ longest_path_all_points(const struct fruity_2d* data)
                 cgs_vector_push(&dists, &m);
         }
 
-        int max = INT_MIN;
-        cgs_vector_foreach(&dists, get_max, &max);
+        int max = *(const int*)cgs_vector_max(&dists, cgs_int_cmp);
 
         cgs_vector_free(&dists);
         return max;
 }
-
-/*
-static void
-print_dists(const struct fruity_2d* dists, int width)
-{
-        fruity_foreach(dists, fruity_io_newline, NULL,
-                        fruity_io_print_int, &width);
-}
-*/
 
 int main(void)
 {
         struct cgs_vector locs = cgs_vector_new(sizeof(struct cgs_string));
         struct fruity_2d dists = { 0 };
         read_and_parse_data(&locs, &dists);
-
-        //print_dists(&dists, 4);
 
         int part1 = shortest_path_all_points(&dists);
         printf("%d\n", part1);
