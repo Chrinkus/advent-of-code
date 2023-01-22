@@ -238,3 +238,35 @@ Other than utilizing niche standard library functions, the techniques are very s
 ### Library Notes
 
 No library usage today!
+
+## Day 12 - JSAbacusFramework.io
+
+The roadblock! This was the challenge that stopped me dead in my new-to-C tracks back in 2020. Most other languages I had used had built-in support for JSON but with C I was on my own to either implement or import a library. I did neither and gave up my 2015/50 dream.
+
+### Challenge Notes
+
+So JSON. There seem to be more than a few JSON parsers written for C. I landed on Dave Gamble's [cJSON](https://github.com/DaveGamble/cJSON). The trick here was to resolve the dependency and learn the API.
+
+#### Dependency Resolution Nightmare
+
+I chose this library over some of the others because it had CMake support baked in. Should be easy, just `FetchContent` and link! Or not! It seems the flavour of CMake written is older and has a few _Professional CMake_ no-no's. I don't know enough about all of that but I DO know that my AoC solution could not find the cJSON header.
+
+So I foked the repo and got to work on tinkering. Skipping the details of the multi-day failed attempts at tweaking the existing `CMakeLists.txt` file, I ended up writing my own CMake file from scratch using the idioms and best practices that I'm familiar with.
+
+I feel alright with this decision because the author suggests that users just move the two files `cJSON.h` and `cJSON.c` into their own project trees and build normally. This has apparently been done enough that I found several posts from people trying to de-tangle cJSON from their source directories after years of it living amongst the lowly C files. At least my solution keeps things compartmentalized.
+
+#### Learn a New API
+
+The README in Dave Gamble's repo has a lot of information about how to build a JSON structure with cJSON but less for parsing and walking the tree. This is probably because walking JSON structures is a separate skill and I'm the chump who should already know what to do..
+
+Turns out the whole JavaScript thing of arrays being objects carries over to JSON as arrays are really just the same as objects just without field-names. The inspection functions for type detection are easy to use and when you know what you got you just read directly from the members. Lather, rinse, recurse.
+
+As a bonus, the functions are const-appropriate so that's a plus!
+
+### Now vs Then
+
+There was no then! Or maybe there was, as I had part 1 complete. Anyway, there's no trace of the source code so thus ends the 'Now vs Then' retrospectives.
+
+### Library Notes
+
+Another `string` and `io_getline` day!

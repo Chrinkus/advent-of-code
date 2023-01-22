@@ -9,17 +9,21 @@ set(CMAKE_C_STANDARD_REQUIRED YES)
 include(FetchContent)
 FetchContent_Declare(cgs
         GIT_REPOSITORY  https://github.com/Chrinkus/libcgs.git
-        GIT_TAG         main
+        GIT_TAG         origin/main
 )
 FetchContent_Declare(fruity
         GIT_REPOSITORY  https://github.com/Chrinkus/fruity.git
-        GIT_TAG         v0.4
+        GIT_TAG         origin/v0.4
 )
 FetchContent_Declare(md5c
         GIT_REPOSITORY  https://github.com/Chrinkus/md5-c.git
-        GIT_TAG         main
+        GIT_TAG         origin/main
 )
-FetchContent_MakeAvailable(cgs fruity md5c)
+FetchContent_Declare(cjson
+        GIT_REPOSITORY  https://github.com/Chrinkus/cJSON.git
+        GIT_TAG         origin/master
+)
+FetchContent_MakeAvailable(cgs fruity md5c cjson)
 
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
@@ -64,6 +68,7 @@ set(solutions
         "1509.c"
         "1510.c"
         "1511.c"
+        "1512.c"
 )
 
 foreach(file IN LISTS solutions)
@@ -73,3 +78,4 @@ foreach(file IN LISTS solutions)
 endforeach()
 
 target_link_libraries(1504 md5c)
+target_link_libraries(1512 cjson)
