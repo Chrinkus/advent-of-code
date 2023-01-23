@@ -9,15 +9,6 @@
 
 enum ice { BUFFSIZE = 32, };
 
-static int
-string_eq_str(const void* a, const void* b)
-{
-        const struct cgs_string* s1 = a;
-        const char* s2 = b;
-
-        return strcmp(cgs_string_data(s1), s2) == 0;
-}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Read
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -25,7 +16,7 @@ string_eq_str(const void* a, const void* b)
 static void*
 insert_location(struct cgs_vector* locs, const char* loc)
 {
-        if (!cgs_vector_find(locs, string_eq_str, loc)) {
+        if (!cgs_vector_find(locs, cgs_string_eq_str, loc)) {
                 struct cgs_string buff = cgs_string_new();
                 cgs_string_from(loc, &buff);
                 cgs_vector_push(locs, &buff);
@@ -54,7 +45,7 @@ static int
 get_dimension(const struct cgs_vector* vs, const char* s)
 {
         for (size_t i = 0; i < cgs_vector_length(vs); ++i) {
-                if (string_eq_str(cgs_vector_get(vs, i), s))
+                if (cgs_string_eq_str(cgs_vector_get(vs, i), s))
                         return (int)i;
         }
         return -1;
