@@ -1,19 +1,33 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 
 #include "cgs.h"
 #include "fruity.h"
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Debug
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+/*
 #include "fruity_io.h"
+
+static void
+print_happys(const struct fruity_2d* happys, int width)
+{
+        fruity_foreach(happys, fruity_io_newline, NULL,
+                        fruity_io_print_int, &width);
+}
+*/
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Read
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 enum buffs { NAMEMAX = 16, FEELMAX = 8, };
 
 const char* gfmt = "%s would %*s %*d happiness units by sitting next to %*s.";
-const char* hfmt = "%s would %s %d happiness units by sitting next to %[A-Za-z].";
+const char* hfmt = "%s would %s %d happiness units " \
+                   "by sitting next to %[A-Za-z].";
 const char* lose = "lose";
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Read
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 static void*
 insert_guest(struct cgs_vector* guests, const char* guest)
@@ -92,12 +106,80 @@ read_and_parse_data(struct cgs_vector* guests, struct fruity_2d* happys)
         return guests;
 }
 
-static void
-print_happys(const struct fruity_2d* happys, int width)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Solution
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+struct seat {
+        int prev;
+        int happy;
+        unsigned seated;
+};
+
+static int
+seat_cmp(const void* a, const void* b)
 {
-        fruity_foreach(happys, fruity_io_newline, NULL,
-                        fruity_io_print_int, &width);
+        const struct seat* s1 = a;
+        const struct seat* s2 = b;
+
+        return cgs_int_cmp(&s2->happy, &s1->happy);
 }
+
+static int
+get_2way_happy(const int* const* aai, int d1, int d2)
+{
+        return aai[d1][d2] + aai[d2][d1];
+}
+
+static void*
+load_seat_queue(const struct fruity_2d* happys, struct cgs_heap* pq,
+                const struct seat* prev)
+{
+        const int* const* aai = fruity_data(happys);
+
+        for (int i = 0; i < fruity_rows(happys); ++i) {
+                if (1u << i & prev->seated)
+                        continue;
+                struct seat next = {
+                        .prev = i,
+                        .seated = prev->seated | 1u << i,
+                        .happy = prev->happy + get_2way_happy(aai,
+                                        i, prev->prev),
+                };
+                cgs_heap_push(pq, &next);
+        }
+        return pq;
+}
+
+static int
+get_happiest_plan(const struct fruity_2d* happys)
+{
+        int happy = INT_MIN;
+        struct cgs_heap pq = cgs_heap_new(sizeof(struct seat), seat_cmp);
+
+        struct seat seat = {
+                .prev = 0,
+                .seated = 1u,
+                .happy = 0,
+        };
+
+        const unsigned ALL_SEATED = (1u << fruity_rows(happys)) - 1;
+        do {
+                load_seat_queue(happys, &pq, &seat);
+                if ((seat.seated & ALL_SEATED) == ALL_SEATED) {
+                        seat.happy += get_2way_happy(fruity_data(happys),
+                                        0, seat.prev);
+                        happy = CGS_MAX(happy, seat.happy);
+                }
+        } while (cgs_heap_pop(&pq, &seat));
+
+        cgs_heap_free(&pq);
+        return happy;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Main
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 int main(void)
 {
@@ -105,10 +187,12 @@ int main(void)
         struct fruity_2d happys = { 0 };
         read_and_parse_data(&guests, &happys);
 
-        print_happys(&happys, 5);
+        //print_happys(&happys, 5);
 
-        int part1 = 0;
-        printf("%d\n", part1);
+        printf("%d\n", get_happiest_plan(&happys));
+
+        fruity_grow(&happys, 1, 1, 0, 0, NULL);
+        printf("%d\n", get_happiest_plan(&happys));
 
         cgs_vector_free_all_with(&guests, cgs_string_free);
         fruity_free(&happys);
