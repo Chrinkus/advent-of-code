@@ -270,3 +270,17 @@ There was no then! Or maybe there was, as I had part 1 complete. Anyway, there's
 ### Library Notes
 
 Another `string` and `io_getline` day!
+
+## Day 14 - Reindeer Olympics
+
+Good decision to have it in an off-year.
+
+### Challenge Notes
+
+This was a fairly straight-forward challenge. Simulate a race between a bunch of reindeer. Managing the different flying vs resting periods and handling the remainder when at the final time of 2503 seconds(?) made up most of the difficulty. I skipped being clever and just simulated second by second for part 1. This helped out in part 2 where we needed to assess the progress each second to award points.
+
+One thing I tried but abandoned was separating the constant reindeer information (speed, time periods) from the dynamic values (distance, points, state). This was to mimic the fly-weight pattern a little but it wasn't a good fit or correct application anyway.
+
+### Library Notes
+
+A lot of vector usage, especially when I had the separate sets of structs. At one point I had close to 10 for-loops. This made me think about returning to the iterator problem. I have some sketches and ideas about how I want them to be used. Maybe it's time to get implementing..
