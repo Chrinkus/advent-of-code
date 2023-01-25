@@ -271,6 +271,20 @@ There was no then! Or maybe there was, as I had part 1 complete. Anyway, there's
 
 Another `string` and `io_getline` day!
 
+## Day 13 - Knights of the Dinner Table
+
+### Challenge Notes
+
+Another all-points graph problem! The neat part is I recognize that immediately! There are a few differences from day 9, the list is circular so there's only one "path", there are negative weights, and each edge has two different weights depending on which way you're going.
+
+Again I parse the data into a matrix and use Djikstra's algorithm with a bit mask to ensure that I visit every node. Then I make sure to tie the path back to the beginning and track the maximum happiness of the arrangements.
+
+I assumed part 2 would have me either find the least happy path or identify the guest with the least like-ability but instead I just had to add my ambivalent self to the table and re-run part 1. The sad thing is that adding myself somehow brought the "best" happiness down a bit..
+
+### Library Notes
+
+Another big day for Fruity! For part 2, the solution was easy because I spent the time to add a `fruity_grow` function that allowed me to effortlessly insert myself into the guest list. I'm really proud of this functionality and it's gotten me thinking about more matrix-appropriate operations.
+
 ## Day 14 - Reindeer Olympics
 
 Good decision to have it in an off-year.
