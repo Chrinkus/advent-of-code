@@ -96,19 +96,33 @@ check_cals_score(const struct fruity_2d* props, int* m, int* t)
         return t[CAL] == CAL_TARGET ? score : 0;
 }
 
+static void
+run_loops(const struct fruity_2d* props, int* m, int len, int* t, int i,
+                Checker chk, int* max)
+{
+        int sum = 0;
+        for (int j = 0; j < i; ++j)
+                sum += m[j];
+
+        if (i == len - 1) {
+                m[i] = TSP - sum;
+                *max = CGS_MAX(chk(props, m, t), *max);
+                return;
+        }
+
+        for (m[i] = 1; m[i] + sum < TSP; ++m[i])
+                run_loops(props, m, len, t, i + 1, chk, max);
+}
+
 static int
 get_highest_score(const struct fruity_2d* props, Checker chk)
 {
-        int* m = malloc(sizeof(int) * fruity_rows(props));
+        int rows = fruity_rows(props);
+        int* m = malloc(sizeof(int) * rows);
         int t[NUM_PROPS];
 
         int max = 0;
-        for (m[0] = 1; m[0] < TSP; ++m[0])
-                for (m[1] = 1; m[0] + m[1] < TSP; ++m[1])
-                        for (m[2] = 1; m[0] + m[1] + m[2] < TSP; ++m[2]) {
-                                m[3] = TSP - m[0] - m[1] - m[2];
-                                max = CGS_MAX(chk(props, m, t), max);
-                        }
+        run_loops(props, m, rows, t, 0, chk, &max);
 
         free(m);
         return max;
