@@ -298,3 +298,33 @@ One thing I tried but abandoned was separating the constant reindeer information
 ### Library Notes
 
 A lot of vector usage, especially when I had the separate sets of structs. At one point I had close to 10 for-loops. This made me think about returning to the iterator problem. I have some sketches and ideas about how I want them to be used. Maybe it's time to get implementing..
+
+## Day 15 - Science for Hungry People
+
+### Challenge Notes
+
+Whoa! This was a rough problem. I assumed there would be a mathematical trick but after posting a question on Reddit I figured I'd need to just get AN answer then try to optimize if it was slow.
+
+So I'm looping. I didn't want to run wasteful loops so my teaspoons always had to add up to 100. Initially I had this:
+
+```
+int m[4];
+for (m[0] = 1; m[0] < 100; ++m[0])
+    for (m[1] = 1; m[0] + m[1] < 100; ++m[1])
+    for (m[2] = 1; m[0] + m[1] + m[2] < 100; ++m[2]) {
+            m[3] = 100 - m[0] - m[1] - m[2];
+            // check teaspoons and max value
+    }
+```
+
+This worked and was fast! However I'm hard-coding the number of ingredients into the set and I don't like doing that. For instance, this solution will not accept the test input. So I needed to generate my loops dynamically. Activate recursive mode!
+
+It was still super fast!
+
+Part 2 had us finding the max score of all recipes that had exactly 500 calories so I was set up well to make it happen.
+
+All in all a good, satisfying challenge!
+
+### Library Notes
+
+Reading lines and a fruity matrix were used here but most of the work was solution-specific.
