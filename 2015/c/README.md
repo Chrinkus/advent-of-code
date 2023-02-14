@@ -328,3 +328,49 @@ All in all a good, satisfying challenge!
 ### Library Notes
 
 Reading lines and a fruity matrix were used here but most of the work was solution-specific.
+
+## Day 17 - No Such Thing as Too Much
+
+In your 40's there actually is such a thing as too much eggnog.
+
+### Challenge Notes
+
+This was a stumper. I understood the problem, I knew I should sort my containers by size, I just couldn't figure out how to generate the combinations. I sketched an iterative solution that then backtracked when the total was too large but I couldn't figure out how to make my algorithm smart enough to know when to do what.
+
+I looked online for "combination sum" and found an algorithm that was similar but had the extra allowance that any 'container' could be used any number of times. It had iterating and backtracking which supported my initial thoughts on the solution but I couldn't figure out how to bend it to my problem.
+
+Many days passed.
+
+Then I was putting my son to bed one night (tonight!) and the thought popped into my head: just recursively iterate on two paths for every call, one with the current element and one without. It was so simple and IT WORKED!
+
+Part 2 has you count the number of ways that you can make your target using the minimum number of containers. My solution worked but I didn't recognize it. The answer was a single digit. That can't be right, can it?
+
+It was. I printed the whole array of ways and you can see the curve nicely:
+
+```
+ 0: 0
+ 1: 0
+ 2: 0
+ 3: 0
+ 4: 4
+ 5: 55
+ 6: 372
+ 7: 835
+ 8: 1286
+ 9: 1153
+10: 485
+11: 167
+12: 15
+13: 0
+14: 0
+15: 0
+16: 0
+17: 0
+18: 0
+19: 0
+20: 0
+```
+
+### Library Notes
+
+Just a vector day. Handy as ever, works like a charm!
