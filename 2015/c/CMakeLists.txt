@@ -74,6 +74,7 @@ set(solutions
         "1515.c"
         "1516.c"
         "1517.c"
+        "1518.c"
 )
 
 foreach(file IN LISTS solutions)

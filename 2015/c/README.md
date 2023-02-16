@@ -374,3 +374,17 @@ It was. I printed the whole array of ways and you can see the curve nicely:
 ### Library Notes
 
 Just a vector day. Handy as ever, works like a charm!
+
+## Day 18 - Like a GIF For Your Yard
+
+### Challenge Notes
+
+Animate some pixels on a 100x100 grid. The key here is double buffering your window. I created a screen struct that contained two equal-sized fruity grids. Read the display pixel by pixel, write results to the buffer and swap them.
+
+Interestingly, the example data was only supposed to run for four steps but that fourth step puts the display into a stagnant state and it does not change even if you run it for the full 100 steps.
+
+For part 2 we need to assume that the corners are always on. I kicked around testing for corner positions in my pixel filter but decided to just write the corners at the end of every iteration. This was cleaner and easier to implement.
+
+### Library Notes
+
+This is what fruity was made for. I got to use the `copy` function that I recenly wrote and had to add a `swap` too. For grabbing the neighbours I also had to finally implement `adjacent_8`. After these additions the solution was fairly straight-forward.
