@@ -388,3 +388,31 @@ For part 2 we need to assume that the corners are always on. I kicked around tes
 ### Library Notes
 
 This is what fruity was made for. I got to use the `copy` function that I recenly wrote and had to add a `swap` too. For grabbing the neighbours I also had to finally implement `adjacent_8`. After these additions the solution was fairly straight-forward.
+
+## Day 19 - Medicine for Rudolph
+
+I struggled enough with part 2 that I peeked on Reddit for some clues as to how to progress. I found a post that connected this problem to actual chemistry and now I suddenly want to take an introduction to chem!
+
+### Challenge Notes
+
+For part 1 I identified that I would like to use my red-black tree set implementation to store the result of every sequence replacement to ensure I only had one of each. This ended up being VERY fast and I once again have to pat myself on the back for my time spent on red-black trees.
+
+Part 2 was a problem. I understood that using brute force to generate all possible combinations of molecules starting from 'e' would result in far too many iterations. But how about reversing part 1 and removing the replacements? This worked as each replacement is longer than the sequence it replaced so I was shrinking my string every iteration. To ensure I was removing the largest possible chunk each iteration I sorted my replacements to check the longer sequences first.
+
+### Library Notes
+
+Libcgs needed some WORK to make this happen. The two main areas of improvement were fixing leaks in my variant clients and adding typical functionality to my string.
+
+#### Variant Leaks
+
+I have 3 clients for my `struct cgs_variant` generic solution, my binary search and red-black trees, and my hash table. All of these have been tested extensively with integers which do not require memory management. I have also run some shallow tests with C-strings using `free()` to clean up after. What I haven't tested or done yet is stored a data object in them that required a custom free function.
+
+While writing my part 1 I knew I was writing leaky code. I took a quick stab at attempting to fix this problem from the data-structures in and became inundated by the spaghetti complexity. I needed a better approach.
+
+I created a branch in git to compartmentalize the changes I needed to make. This time I started from my variant and worked my way out. Once that was figured out changing the data structures was fairly straight forward.
+
+#### Common String Operations
+
+My string implementation has been a work in progress all along. Two common operations that I lacked but needed for this challenge were `replace` and `find`. Both of which are position-based algorithms so it makes sense that they would be used together.
+
+I looked up common implementations of these functions in JavaScript, C++ and Rust to guide my approach as providing a common interface is one of my development goals.

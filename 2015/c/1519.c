@@ -27,6 +27,20 @@ replacement_free(void* repl)
         cgs_string_free(&r->rep);
 }
 
+static int
+replacement_cmp(const void* a, const void* b)
+{
+        const struct replacement* r1 = a;
+        const struct replacement* r2 = b;
+        const size_t s1 = cgs_string_length(&r1->rep);
+        const size_t s2 = cgs_string_length(&r2->rep);
+        if (s1 < s2)
+                return 1;
+        if (s1 > s2)
+                return -1;
+        return 0;
+}
+
 static void*
 read_input(struct cgs_vector* repls, struct cgs_string* input)
 {
@@ -105,16 +119,38 @@ calibrate_machine(const struct cgs_vector* vr, const struct cgs_string* input,
         return mtree;
 }
 
+static int
+count_fabrication_steps(const struct cgs_vector* vr, const char* target,
+                struct cgs_string* s)
+{
+        int count = 0;
+        while (!cgs_string_eq_str(s, target)) {
+                for (size_t i = 0; i < cgs_vector_length(vr); ++i) {
+                        const struct replacement* r = cgs_vector_get(vr, i);
+                        size_t pos = cgs_string_find(s, &r->rep);
+                        if (pos == cgs_string_length(s))
+                                continue;
+                        cgs_string_replace(s, pos, cgs_string_length(&r->rep),
+                                        &r->seq);
+                        count += 1;
+                        break;
+                }
+        }
+        return count;
+}
+
 int main(void)
 {
         struct cgs_vector repls = cgs_vector_new(sizeof(struct replacement));
         struct cgs_string input = cgs_string_new();
         read_input(&repls, &input);
 
-        struct cgs_rbt molecules = cgs_rbt_new(cgs_string_cmp);
+        struct cgs_rbt molecules = cgs_rbt_new(cgs_string_cmp, cgs_string_free);
         calibrate_machine(&repls, &input, &molecules);
-
         printf("%zu\n", cgs_rbt_length(&molecules));
+
+        cgs_vector_sort(&repls, replacement_cmp);
+        printf("%d\n", count_fabrication_steps(&repls, "e", &input));
 
         cgs_vector_free_all_with(&repls, replacement_free);
         cgs_string_free(&input);
