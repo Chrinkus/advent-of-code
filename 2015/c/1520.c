@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <limits.h>
+
+enum constants { MUL_1 = 10, MUL_2 = 11, ELF_MAX = 50, };
 
 static int
 read_input(FILE* file)
@@ -18,16 +21,22 @@ isqrt(int x)
 }
 
 static int
-get_first_house(int target)
+get_first_house(int target, int mul, int max)
 {
-        for (int i = 1, n = 0; ; ++i, n = isqrt(i)) {
-                int sum = n * n == i ? i : 0;
+        const int tar = target / mul;
 
-                for (int j = n; j > 0; --j)
-                        if (i % j == 0)
-                                sum += j + i / j;
+        for (int i = 1, n = isqrt(i); ; ++i, n = isqrt(i)) {
+                int sum = (n * n == i && n <= max) ? n : 0;
 
-                if (sum >= target)
+                for (int j = n - 1; j > 0; --j)
+                        if (i % j == 0) {
+                                int k = i / j;
+                                if (j <= max)
+                                        sum += k;
+                                if (k <= max)
+                                        sum += j;
+                        }
+                if (sum >= tar)
                         return i;
         }
 }
@@ -36,7 +45,8 @@ int main(void)
 {
         int input = read_input(stdin);
 
-        printf("%d\n", get_first_house(input / 10));
+        printf("%d\n", get_first_house(input, MUL_1, INT_MAX));
+        printf("%d\n", get_first_house(input, MUL_2, ELF_MAX));
 
         return EXIT_SUCCESS;
 }
