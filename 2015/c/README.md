@@ -416,3 +416,29 @@ I created a branch in git to compartmentalize the changes I needed to make. This
 My string implementation has been a work in progress all along. Two common operations that I lacked but needed for this challenge were `replace` and `find`. Both of which are position-based algorithms so it makes sense that they would be used together.
 
 I looked up common implementations of these functions in JavaScript, C++ and Rust to guide my approach as providing a common interface is one of my development goals.
+
+## Day 20 - Infinite Elves and Infinite Houses
+
+Well this is embarassing. I solved this problem months ago and forgot to record my process. This is unfortunate since my solution is merely 52 lines long for a day 20 problem. It's actually very elegant.. why can't I.. WAIT! I got it~!
+
+### Challenge Notes
+
+I defnintely tried to brute force this initially but that would have taken a very long time. At some point I recognized that the number of gifts that each house got was the factor sum of the house number. The mulitiplier was there to obfuscate this. 
+
+The tricky part was finding all of the factors for each house number quickly. Brute force would have checked every number up to the total but a programming exercise I once did taught me that the square root of a number is the turning point of it's factors:
+
+```
+|   36    |
+|=========|
+| 1 -> 36 |
+| 2 -> 18 |
+| 3 -> 12 |
+| 4 ->  9 |
+|    6    |
+```
+
+The solution still takes a second or two to run but that's far better than the 15 minutes it otherwise might have taken.
+
+### Library Notes
+
+No library usage today!
