@@ -125,7 +125,7 @@ setup_part_2(struct cgs_hashtab* ht, Sig bval)
 
 int main(void)
 {
-        struct cgs_hashtab wt = cgs_hashtab_new();
+        struct cgs_hashtab wt = cgs_hashtab_new(free);
 
         read_and_build_wire_table(&wt);
 
