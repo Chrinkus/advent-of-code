@@ -77,6 +77,7 @@ set(solutions
         "1518.c"
         "1519.c"
         "1520.c"
+        "1521.c"
 )
 
 foreach(file IN LISTS solutions)
@@ -87,5 +88,5 @@ endforeach()
 
 target_link_libraries(1504 md5c)
 target_link_libraries(1512 cjson)
-target_link_libraries(1518 ncurses)
+#target_link_libraries(1518 ncurses)
 target_link_libraries(1520 m)
