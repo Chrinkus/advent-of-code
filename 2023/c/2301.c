@@ -5,6 +5,7 @@
 
 enum {
         BUFFMAX = 128,
+        ENODIGIT = -1,
         TENS_1 = 1,
         TENS_2 = 1 << 1,
         ONES_1 = 1 << 2,
@@ -41,10 +42,10 @@ const char* const digits[NUM_DIGITS] = {
 static int
 get_spelled_num(const char* s)
 {
-        for (int i = ZERO; i < NUM_DIGITS; ++i)
+        for (int i = 0; i < NUM_DIGITS; ++i)
                 if (strncmp(digits[i], s, strlen(digits[i])) == 0)
                         return i;
-        return -1;
+        return ENODIGIT;
 }
 
 static void
@@ -52,7 +53,7 @@ check_and_flag(const char* s, int* n1, int* n2, int* flags, int f1, int f2,
                 const int mul)
 {
         // Part 1
-        int tmp = isdigit(s[0]) ? s[0] - '0' : -1;
+        int tmp = isdigit(s[0]) ? s[0] - '0' : ENODIGIT;
 
         if (tmp >= 0 && (*flags & f1) == 0) {
                 *n1 += mul * tmp;
@@ -60,10 +61,10 @@ check_and_flag(const char* s, int* n1, int* n2, int* flags, int f1, int f2,
         }
 
         // Part 2
-        if (tmp < 0)
+        if (tmp == ENODIGIT)
                 tmp = get_spelled_num(s);
 
-        if (tmp >= 0 && (*flags & f2) == 0) {
+        if (tmp != ENODIGIT && (*flags & f2) == 0) {
                 *n2 += mul * tmp;
                 *flags |= f2;
         }
