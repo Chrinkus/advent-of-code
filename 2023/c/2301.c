@@ -55,7 +55,7 @@ check_and_flag(const char* s, int* n1, int* n2, int* flags, int f1, int f2,
         // Part 1
         int tmp = isdigit(s[0]) ? s[0] - '0' : ENODIGIT;
 
-        if (tmp >= 0 && (*flags & f1) == 0) {
+        if (tmp != ENODIGIT && (*flags & f1) == 0) {
                 *n1 += mul * tmp;
                 *flags |= f1;
         }
