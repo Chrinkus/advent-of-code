@@ -58,6 +58,7 @@ add_compile_options(-Wall -Wextra -Werror)
 # Solution processing
 set(solutions
         "2401.c"
+        "2402.c"
 )
 
 foreach(file IN LISTS solutions)
